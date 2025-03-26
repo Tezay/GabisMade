@@ -21,12 +21,12 @@ python3 -m venv .venv
 
 #### Pour Windows
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 #### Pour Linux/MacOS
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
 
