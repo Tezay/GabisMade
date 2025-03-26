@@ -398,3 +398,12 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Database files
+instance/

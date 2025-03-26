@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un produit</title>
+</head>
+<body>
+    <h1>Ajouter un nouveau produit</h1>
+    <form method="POST">
+        <label>Nom :</label><br>
+        <input type="text" name="nom" required><br><br>
+
+        <label>Description :</label><br>
+        <textarea name="description" required></textarea><br><br>
+
+        <label>Prix :</label><br>
+        <input type="number" step="0.01" name="prix" required><br><br>
+
+        <label>Stock :</label><br>
+        <input type="number" name="stock" required><br><br>
+
+        <label>Chemin de l'image :</label><br>
+        <input type="text" name="image_path"><br><br>
+
+        <button type="submit">Ajouter</button>
+    </form>
+</body>
+</html>
