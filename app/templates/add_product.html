@@ -1,33 +1,35 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Ajouter un produit</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+{% extends 'base.html' %}
+
+{% block title %} Ajouter un produit {% endblock %}
+
+{% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/add_product.css') }}">
-</head>
-<body>
-    <h1>Ajouter un nouveau produit</h1>
+{% endblock %}
 
-    <a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
 
-    <form method="POST">
-        <label>Nom :</label><br>
-        <input type="text" name="nom" required><br><br>
+{% block content %}
 
-        <label>Description :</label><br>
-        <textarea name="description" required></textarea><br><br>
+<h1>Ajouter un nouveau produit</h1>
 
-        <label>Prix :</label><br>
-        <input type="number" step="0.01" name="prix" required><br><br>
+<a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
 
-        <label>Stock :</label><br>
-        <input type="number" name="stock" required><br><br>
+<form method="POST">
+    <label>Nom :</label><br>
+    <input type="text" name="nom" required><br><br>
 
-        <label>Chemin de l'image :</label><br>
-        <input type="text" name="image_path"><br><br>
+    <label>Description :</label><br>
+    <textarea name="description" required></textarea><br><br>
 
-        <button type="submit">Ajouter</button>
-    </form>
-</body>
-</html>
+    <label>Prix :</label><br>
+    <input type="number" step="0.01" name="prix" required><br><br>
+
+    <label>Stock :</label><br>
+    <input type="number" name="stock" required><br><br>
+
+    <label>Chemin de l'image :</label><br>
+    <input type="text" name="image_path"><br><br>
+
+    <button type="submit">Ajouter</button>
+</form>
+
+{% endblock %}

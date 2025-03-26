@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Liste des produits</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+{% extends 'base.html' %}
+
+{% block title %}Liste des produits{% endblock %}
+
+{% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/products_list.css') }}">
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <h1>Produits disponibles</h1>
     <a href="{{ url_for('main.add_product') }}">Ajouter un produit</a>
     <hr>
@@ -25,5 +25,4 @@
         </div>
         <hr>
     {% endfor %}
-</body>
-</html>
+{% endblock %}
