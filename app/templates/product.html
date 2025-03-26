@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ product.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">
 </head>
 <body>
     <h1>{{ product.name }}</h1>
     <a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
     <hr>
-        <div style="margin-bottom: 20px;">
-            <h2>{{ product.name }}</h2>
-            <p><strong>Description :</strong> {{ product.description }}</p>
-            <p><strong>Prix :</strong> {{ product.price }} €</p>
-            <p><strong>Stock :</strong> {{ product.stock }}</p>
-            <p><strong>Actif :</strong> {{ 'Oui' if product.is_active else 'Non' }}</p>
-            {% if product.image_path %}
-                <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}" style="max-width: 200px;">
-            {% endif %}
-        </div>
+    <div class="product-details">
+        <h2>{{ product.name }}</h2>
+        <p><strong>Description :</strong> {{ product.description }}</p>
+        <p><strong>Prix :</strong> {{ product.price }} €</p>
+        <p><strong>Stock :</strong> {{ product.stock }}</p>
+        <p><strong>Actif :</strong> {{ 'Oui' if product.is_active else 'Non' }}</p>
+        {% if product.image_path %}
+            <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}">
+        {% endif %}
+    </div>
     <hr>
 
     <form method="POST" action="{{ url_for('main.delete_product', product_id=product.id) }}" onsubmit="return confirm('Es-tu sûr de vouloir supprimer ce produit ?');">
-        <button type="submit" style="color: white; background-color: red; padding: 10px; border: none; cursor: pointer;">
+        <button type="submit" class="delete-button">
             Supprimer ce produit
         </button>
     </form>

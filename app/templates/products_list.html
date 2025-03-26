@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Liste des produits</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/products_list.css') }}">
 </head>
 <body>
     <h1>Produits disponibles</h1>
     <a href="{{ url_for('main.add_product') }}">Ajouter un produit</a>
     <hr>
     {% for product in products %}
-        <div style="margin-bottom: 20px;">
+        <div class="product">
             <a href="{{ url_for('main.product', product_id=product.id) }}">
                 <h2>{{ product.name }}</h2>
             </a>
@@ -18,7 +19,7 @@
             <p><strong>Stock :</strong> {{ product.stock }}</p>
             <p><strong>Actif :</strong> {{ 'Oui' if product.is_active else 'Non' }}</p>
             {% if product.image_path %}
-                <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}" style="max-width: 200px;">
+                <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}">
             {% endif %}
         </div>
         <hr>

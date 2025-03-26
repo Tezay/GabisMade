@@ -1,0 +1,15 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #333;
+}
+
+.product {
+    margin-bottom: 20px;
+}
+
+.product img {
+    max-width: 200px;
+}

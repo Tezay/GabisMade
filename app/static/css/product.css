@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #333;
+}
+
+.product-details img {
+    max-width: 200px;
+}
+
+.delete-button {
+    color: white;
+    background-color: red;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+}
