@@ -2,17 +2,14 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Liste des produits</title>
+    <title>{{ product.name }}</title>
 </head>
 <body>
-    <h1>Produits disponibles</h1>
-    <a href="{{ url_for('main.add_product') }}">Ajouter un produit</a>
+    <h1>{{ product.name }}</h1>
+    <a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
     <hr>
-    {% for product in products %}
         <div style="margin-bottom: 20px;">
-            <a href="{{ url_for('main.product', product_id=product.id) }}">
-                <h2>{{ product.name }}</h2>
-            </a>
+            <h2>{{ product.name }}</h2>
             <p><strong>Description :</strong> {{ product.description }}</p>
             <p><strong>Prix :</strong> {{ product.price }} €</p>
             <p><strong>Stock :</strong> {{ product.stock }}</p>
@@ -21,7 +18,12 @@
                 <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}" style="max-width: 200px;">
             {% endif %}
         </div>
-        <hr>
-    {% endfor %}
+    <hr>
+
+    <form method="POST" action="{{ url_for('main.delete_product', product_id=product.id) }}" onsubmit="return confirm('Es-tu sûr de vouloir supprimer ce produit ?');">
+        <button type="submit" style="color: white; background-color: red; padding: 10px; border: none; cursor: pointer;">
+            Supprimer ce produit
+        </button>
+    </form>
 </body>
 </html>

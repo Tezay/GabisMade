@@ -404,6 +404,7 @@ FodyWeavers.xsd
 venv/
 ENV/
 env/
+.venv*/
 
 # Database files
 instance/

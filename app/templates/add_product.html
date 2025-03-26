@@ -6,6 +6,9 @@
 </head>
 <body>
     <h1>Ajouter un nouveau produit</h1>
+
+    <a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
+
     <form method="POST">
         <label>Nom :</label><br>
         <input type="text" name="nom" required><br><br>

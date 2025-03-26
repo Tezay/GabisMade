@@ -1,5 +1,6 @@
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
 
 # Table des utilisateurs
 class User(db.Model):
@@ -27,7 +28,7 @@ class Product(db.Model):
     __tablename__ = 'products'
 
     # Colonnes de la table
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4())) # ID unique
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     price = db.Column(db.Float, nullable=False)

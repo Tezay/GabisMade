@@ -16,3 +16,17 @@ def add_new_product(name, description, price, stock=0, is_active=True, image_pat
     db.session.commit()
     # Retourne le produit créé
     return new_product
+
+
+def remove_product(product_id):
+    # Recherche le produit correspondant à l'UUID
+    product_to_remove = Product.query.get(product_id)
+    
+    if product_to_remove is None:
+        # Aucun produit trouvé avec cet ID
+        return False
+
+    # Supprime le produit de la base
+    db.session.delete(product_to_remove)
+    db.session.commit()
+    return True
