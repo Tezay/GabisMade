@@ -222,3 +222,19 @@ def delete_user(user_id):
     else:
         flash("Échec de la suppression de l'utilisateur.", "error")
     return redirect(url_for('main.list_users'))
+
+
+@bp.route('/user/<user_id>')
+def user_profile(user_id):
+    current_user_id = request.cookies.get('user_id')
+    if not current_user_id:
+        abort(403)  # Accès interdit si l'utilisateur n'est pas connecté
+
+    if current_user_id != user_id and not is_admin(current_user_id):
+        abort(403)  # Accès interdit si ce n'est ni l'utilisateur ni un admin
+
+    user = User.query.get(user_id)
+    if not user:
+        abort(404)  # Utilisateur non trouvé
+
+    return render_template('user_profile.html', user=user)

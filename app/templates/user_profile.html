@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Profil de {{ user.first_name }} {{ user.last_name }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Profil de {{ user.first_name }} {{ user.last_name }}</h1>
+<div class="user-info">
+    <p><strong>Prénom :</strong> {{ user.first_name }}</p>
+    <p><strong>Nom :</strong> {{ user.last_name }}</p>
+    <p><strong>Numéro de téléphone :</strong> {{ user.phone_number }}</p>
+    <form action="{{ url_for('main.logout') }}" method="GET">
+        <button type="submit" class="logout-button">Se déconnecter</button>
+    </form>
+</div>
+{% endblock %}

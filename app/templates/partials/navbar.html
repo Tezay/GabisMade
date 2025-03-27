@@ -5,13 +5,13 @@
             ☰
         </button>
         <div class="navbar-links">
-            <a href="#">Accueil</a>
+            <a href="{{ url_for('main.home') }}">Accueil</a>
             <a href="{{ url_for('main.list_products') }}">Produits</a>
             <a href="#">Contact</a>
             <a href="#">À propos</a>
             <a href="#" class="cart-button">Mon panier</a>
             {% if g.user_logged_in %}
-                <a href="{{ url_for('main.logout') }}">Se déconnecter</a>
+                <a href="{{ url_for('main.user_profile', user_id=request.cookies.get('user_id')) }}">Mon compte</a>
             {% else %}
                 {% if g.device_id_known %}
                     <a href="{{ url_for('main.login') }}">Se connecter</a>
