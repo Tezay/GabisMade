@@ -92,11 +92,21 @@ def update_device_id(user, new_device_id):
         user.device_id = new_device_id
         db.session.commit()
 
-def update_user_privilege(user_id, new_privilege_level):
-    # Met à jour le niveau de privilège d'un utilisateur
+
+def update_user_field(user_id, field_name, new_value):
+    # Met à jour un champ spécifique d'un utilisateur
     user = User.query.get(user_id)
-    if user:
-        user.privilege_level = new_privilege_level
+    if user and hasattr(user, field_name):
+        setattr(user, field_name, new_value)
+        db.session.commit()
+        return True
+    return False
+
+def remove_user(user_id):
+    # Supprime un utilisateur de la base de données
+    user_to_remove = User.query.get(user_id)
+    if user_to_remove:
+        db.session.delete(user_to_remove)
         db.session.commit()
         return True
     return False

@@ -1,5 +1,5 @@
 from flask import request, redirect, url_for, render_template, make_response, flash, abort, g
-from .utils import add_new_product, remove_product, add_new_user, is_device_id_known, is_admin, is_name_taken, update_device_id, update_user_privilege
+from .utils import add_new_product, remove_product, add_new_user, is_device_id_known, is_admin, is_name_taken, update_device_id, update_user_field, remove_user
 from .models import Product, User
 import uuid
 from flask import Blueprint, redirect, url_for, flash
@@ -195,15 +195,30 @@ def list_users():
     return render_template('users_list.html', users=users)
 
 
-@bp.route('/update_privilege/<user_id>', methods=['POST'])
-def update_privilege(user_id):
+@bp.route('/update_user_field/<user_id>', methods=['POST'])
+def update_user_field_route(user_id):
     admin_id = request.cookies.get('user_id')
     if not admin_id or not is_admin(admin_id):
         abort(403)  # Accès interdit si l'utilisateur n'est pas admin
 
-    new_privilege_level = request.form.get('privilege_level')
-    if update_user_privilege(user_id, new_privilege_level):
-        flash("Niveau de privilège mis à jour avec succès.", "success")
+    field_name = request.form.get('field_name')
+    new_value = request.form.get('new_value')
+
+    if update_user_field(user_id, field_name, new_value):
+        flash(f"Champ '{field_name}' mis à jour avec succès.", "success")
     else:
-        flash("Échec de la mise à jour du niveau de privilège.", "error")
+        flash(f"Échec de la mise à jour du champ '{field_name}'.", "error")
+    return redirect(url_for('main.list_users'))
+
+
+@bp.route('/delete_user/<user_id>', methods=['POST'])
+def delete_user(user_id):
+    admin_id = request.cookies.get('user_id')
+    if not admin_id or not is_admin(admin_id):
+        abort(403)  # Accès interdit si l'utilisateur n'est pas admin
+
+    if remove_user(user_id):
+        flash("Utilisateur supprimé avec succès.", "success")
+    else:
+        flash("Échec de la suppression de l'utilisateur.", "error")
     return redirect(url_for('main.list_users'))

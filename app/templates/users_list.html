@@ -24,19 +24,44 @@
         {% for user in users %}
         <tr>
             <td>{{ user.id }}</td>
-            <td>{{ user.first_name }}</td>
-            <td>{{ user.last_name }}</td>
-            <td>{{ user.phone_number }}</td>
-            <td>{{ user.privilege_level }}</td>
-            <td>{{ user.device_id }}</td>
+            <td onclick="editField('{{ user.id }}', 'first_name', '{{ user.first_name }}')">{{ user.first_name }}</td>
+            <td onclick="editField('{{ user.id }}', 'last_name', '{{ user.last_name }}')">{{ user.last_name }}</td>
+            <td onclick="editField('{{ user.id }}', 'phone_number', '{{ user.phone_number }}')">{{ user.phone_number }}</td>
+            <td onclick="editField('{{ user.id }}', 'privilege_level', '{{ user.privilege_level }}')">{{ user.privilege_level }}</td>
+            <td onclick="editField('{{ user.id }}', 'device_id', '{{ user.device_id }}')">{{ user.device_id }}</td>
             <td>
-                <form action="{{ url_for('main.update_privilege', user_id=user.id) }}" method="POST">
-                    <input type="text" name="privilege_level" value="{{ user.privilege_level }}" required>
-                    <button type="submit">Modifier</button>
+                <form action="{{ url_for('main.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                    <button type="submit" class="delete-button">Supprimer</button>
                 </form>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+    function editField(userId, fieldName, currentValue) {
+        const newValue = prompt(`Modifier le champ "${fieldName}" (actuel: ${currentValue}):`, currentValue);
+        if (newValue !== null && newValue !== currentValue) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/update_user_field/${userId}`;
+
+            const fieldInput = document.createElement('input');
+            fieldInput.type = 'hidden';
+            fieldInput.name = 'field_name';
+            fieldInput.value = fieldName;
+            form.appendChild(fieldInput);
+
+            const valueInput = document.createElement('input');
+            valueInput.type = 'hidden';
+            valueInput.name = 'new_value';
+            valueInput.value = newValue;
+            form.appendChild(valueInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
 {% endblock %}
