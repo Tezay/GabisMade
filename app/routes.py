@@ -1,5 +1,5 @@
 from flask import request, redirect, url_for, render_template, make_response, flash, abort, g
-from .utils import add_new_product, remove_product, add_new_user, is_device_id_known, is_admin, is_name_taken, update_device_id
+from .utils import add_new_product, remove_product, add_new_user, is_device_id_known, is_admin, is_name_taken, update_device_id, update_user_privilege
 from .models import Product, User
 import uuid
 from flask import Blueprint, redirect, url_for, flash
@@ -183,3 +183,27 @@ def home():
         privilege_level = "Aucun"
 
     return render_template('home.html', first_name=first_name, privilege_level=privilege_level)
+
+
+@bp.route('/users')
+def list_users():
+    user_id = request.cookies.get('user_id')
+    if not user_id or not is_admin(user_id):
+        abort(403)  # Accès interdit si l'utilisateur n'est pas admin
+
+    users = User.query.all()
+    return render_template('users_list.html', users=users)
+
+
+@bp.route('/update_privilege/<user_id>', methods=['POST'])
+def update_privilege(user_id):
+    admin_id = request.cookies.get('user_id')
+    if not admin_id or not is_admin(admin_id):
+        abort(403)  # Accès interdit si l'utilisateur n'est pas admin
+
+    new_privilege_level = request.form.get('privilege_level')
+    if update_user_privilege(user_id, new_privilege_level):
+        flash("Niveau de privilège mis à jour avec succès.", "success")
+    else:
+        flash("Échec de la mise à jour du niveau de privilège.", "error")
+    return redirect(url_for('main.list_users'))

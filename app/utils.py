@@ -91,3 +91,12 @@ def update_device_id(user, new_device_id):
         print(f"Updating device_id for user {user.id} from {user.device_id} to {new_device_id}")
         user.device_id = new_device_id
         db.session.commit()
+
+def update_user_privilege(user_id, new_privilege_level):
+    # Met à jour le niveau de privilège d'un utilisateur
+    user = User.query.get(user_id)
+    if user:
+        user.privilege_level = new_privilege_level
+        db.session.commit()
+        return True
+    return False
