@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+<h2>Connexion</h2>
+<form method="POST" action="{{ url_for('main.login') }}">
+    <label for="first_name">Prénom:</label>
+    <input type="text" id="first_name" name="first_name" required>
+    
+    <label for="last_name">Nom:</label>
+    <input type="text" id="last_name" name="last_name" required>
+    
+    <label for="password">Mot de passe:</label>
+    <input type="password" id="password" name="password" required>
+    
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    
+    <button type="submit">Se connecter</button>
+</form>
+{% endblock %}

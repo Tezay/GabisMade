@@ -58,3 +58,14 @@ def is_admin(user_id):
     if user:
         return user.privilege_level == "admin"
     return False
+
+def is_name_taken(first_name, last_name):
+    # Vérifie si un utilisateur avec le même nom et prénom existe déjà
+    return User.query.filter_by(first_name=first_name, last_name=last_name).first() is not None
+
+def update_device_id(user, new_device_id):
+    # Met à jour le device_id de l'utilisateur si nécessaire
+    if user.device_id != new_device_id:
+        print(f"Updating device_id for user {user.id} from {user.device_id} to {new_device_id}")
+        user.device_id = new_device_id
+        db.session.commit()

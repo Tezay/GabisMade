@@ -10,7 +10,16 @@
             <a href="#">Contact</a>
             <a href="#">À propos</a>
             <a href="#" class="cart-button">Mon panier</a>
-            <a href="{{ url_for('main.register') }}">S'inscrire</a>
+            {% if g.user_logged_in %}
+                <a href="{{ url_for('main.logout') }}">Se déconnecter</a>
+            {% else %}
+                {% if g.device_id_known %}
+                    <a href="{{ url_for('main.login') }}">Se connecter</a>
+                {% else %}
+                    <a href="{{ url_for('main.register') }}">Créer mon compte</a>
+                    <a href="{{ url_for('main.login') }}">Se connecter</a>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 </nav>

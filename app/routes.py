@@ -1,11 +1,19 @@
-from flask import request, redirect, url_for, render_template, make_response, flash, abort
-from .utils import add_new_product, remove_product, add_new_user, is_device_id_known, is_admin
-from .models import Product
+from flask import request, redirect, url_for, render_template, make_response, flash, abort, g
+from .utils import add_new_product, remove_product, add_new_user, is_device_id_known, is_admin, is_name_taken, update_device_id
+from .models import Product, User
 import uuid
 from flask import Blueprint, redirect, url_for, flash
 
 # Crée un Blueprint pour les routes principales
 bp = Blueprint('main', __name__)
+
+
+@bp.before_app_request
+def before_request():
+    # Vérifie si le device_id est connu et stocke le résultat dans le contexte global
+    device_id = request.cookies.get('device_id')
+    g.device_id_known = is_device_id_known(device_id) if device_id else False
+    g.user_logged_in = bool(request.cookies.get('user_id'))
 
 
 # Route pour ajouter un produit (à la base de données)
@@ -77,6 +85,41 @@ def delete_product(product_id):
     return redirect(url_for('main.list_products'))
 
 
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        password = request.form['password']
+
+        # Vérifie si l'utilisateur existe et si le mot de passe est correct
+        user = User.query.filter_by(first_name=first_name, last_name=last_name).first()
+        if user and user.check_password(password):
+            # Récupère le device_id actuel
+            current_device_id = request.cookies.get('device_id')
+            if current_device_id:
+                # Met à jour le device_id via la fonction dédiée
+                update_device_id(user, current_device_id)
+
+            # Connexion réussie, stocke l'user_id dans les cookies
+            response = make_response(redirect(url_for('main.home')))
+            response.set_cookie('user_id', user.id)
+            return response
+        else:
+            # Échec de la connexion
+            return render_template('login.html', error="Nom, prénom ou mot de passe incorrect.")
+
+    return render_template('login.html')
+
+
+@bp.route('/logout')
+def logout():
+    # Supprime les cookies de l'utilisateur
+    response = make_response(redirect(url_for('main.home')))
+    response.delete_cookie('user_id')
+    return response
+
+
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -86,10 +129,13 @@ def register():
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
-    
         if password != confirm_password:
             print("Passwords do not match.")
             return render_template('register.html', error="Les mots de passe ne correspondent pas.")
+
+        # Vérifie si le couple nom-prénom est déjà utilisé
+        if is_name_taken(first_name, last_name):
+            return render_template('register.html', error="Un compte avec ce nom et prénom existe déjà.")
 
         # Retrieve or generate device_id from cookies
         device_id = request.cookies.get('device_id')
@@ -119,3 +165,21 @@ def register():
         return response
 
     return render_template('register.html')
+
+
+@bp.route('/')
+def home():
+    user_id = request.cookies.get('user_id')
+    if user_id:
+        user = User.query.get(user_id)
+        if user:
+            first_name = user.first_name
+            privilege_level = user.privilege_level
+        else:
+            first_name = "Invité"
+            privilege_level = "Aucun"
+    else:
+        first_name = "Invité"
+        privilege_level = "Aucun"
+
+    return render_template('home.html', first_name=first_name, privilege_level=privilege_level)
