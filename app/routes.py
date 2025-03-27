@@ -3,6 +3,8 @@ from .utils import add_new_product, remove_product, add_new_user, is_device_id_k
 from .models import Product, User
 import uuid
 from flask import Blueprint, redirect, url_for, flash
+from werkzeug.utils import secure_filename
+import os
 
 # Crée un Blueprint pour les routes principales
 bp = Blueprint('main', __name__)
@@ -28,7 +30,19 @@ def add_product():
         description = request.form['description']
         price = float(request.form['prix'])
         stock = int(request.form['stock'])
-        image_path = request.form['image_path']
+        image = request.files.get('image')
+
+        # Default image path
+        image_path = 'img/default.png'
+
+        # Save the uploaded image if provided
+        if image:
+            product_id = str(uuid.uuid4())  # Generate a unique ID for the product
+            filename = secure_filename(f"{product_id}.png")
+            img_dir = os.path.join('app', 'static', 'img')
+            os.makedirs(img_dir, exist_ok=True)  # Ensure the directory exists
+            image.save(os.path.join(img_dir, filename))
+            image_path = f'img/{filename}'
 
         # Appel méthode pour ajouter un nouveau produit
         add_new_product(

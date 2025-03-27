@@ -408,3 +408,9 @@ env/
 
 # Database files
 instance/
+
+# Ignore images files
+app/static/img/*
+
+# Exept default.png
+!app/static/img/default.png

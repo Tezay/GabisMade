@@ -13,7 +13,7 @@
 
 <a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     <label>Nom :</label><br>
     <input type="text" name="nom" required><br><br>
 
@@ -26,8 +26,8 @@
     <label>Stock :</label><br>
     <input type="number" name="stock" required><br><br>
 
-    <label>Chemin de l'image :</label><br>
-    <input type="text" name="image_path"><br><br>
+    <label>Image :</label><br>
+    <input type="file" name="image" accept="image/*"><br><br>
 
     <button type="submit">Ajouter</button>
 </form>
