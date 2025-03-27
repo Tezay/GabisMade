@@ -5,6 +5,7 @@ import uuid
 from flask import Blueprint, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 import os
+import re
 
 # Crée un Blueprint pour les routes principales
 bp = Blueprint('main', __name__)
@@ -155,14 +156,22 @@ def logout():
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        phone_number = request.form['phone_number']
+        first_name = request.form['first_name'].strip()
+        last_name = request.form['last_name'].strip()
+        phone_number = request.form['phone_number'].strip()
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
+        # Validation des champs
+        if not re.match(r'^[A-Za-zÀ-ÿ-]{2,20}$', first_name):
+            return render_template('register.html', error="Le format du prénom n'est pas valide.")
+        if not re.match(r'^[A-Za-zÀ-ÿ-]{2,20}$', last_name):
+            return render_template('register.html', error="Le nom format du nom n'est pas valide.")
+        if not re.match(r'^\+?[0-9]{10,15}$', phone_number):
+            return render_template('register.html', error="Le numéro de téléphone doit être valide (10 à 15 chiffres, avec un '+' optionnel).")
+        if len(password) < 6:
+            return render_template('register.html', error="Le mot de passe doit contenir au moins 6 caractères.")
         if password != confirm_password:
-            print("Passwords do not match.")
             return render_template('register.html', error="Les mots de passe ne correspondent pas.")
 
         # Vérifie si le couple nom-prénom est déjà utilisé
