@@ -14,7 +14,7 @@ cd GabisMade
 ### 2. Créer un environnement virtuel
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
 ```
 
 ### 3. Activer l'environnement virtuel
@@ -70,5 +70,5 @@ flask run
 ### Exécuter le script app/reset_db.py
 
 ```bash
-python app/reset_db.py
+python reset_db.py
 ```
