@@ -30,7 +30,7 @@ class Product(db.Model):
     __tablename__ = 'products'
 
     # Colonnes de la table
-    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4())) # ID unique
+    id = db.Column(db.String(36), primary_key=True) # ID unique
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     price = db.Column(db.Float, nullable=False)

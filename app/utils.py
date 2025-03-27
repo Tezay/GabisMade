@@ -1,10 +1,12 @@
 import unicodedata
+import os
 from .models import Product, User
 from . import db
 
-def add_new_product(name, description, price, stock=0, is_active=True, image_path=None):
+def add_new_product(id, name, description, price, stock=0, is_active=True, image_path=None):
     # Crée un nouveau produit
     new_product = Product(
+        id=id,
         name=name,
         description=description,
         price=price,
@@ -25,7 +27,16 @@ def remove_product(product_id):
     
     if product_to_remove is None:
         # Aucun produit trouvé avec cet ID
+        print("Aucun produit trouvé avec cet ID.")
         return False
+
+    # Supprime le fichier d'image associé si présent
+    if product_to_remove.image_path:
+        img_dir = os.path.join("app", "static", "img")
+        image_file = os.path.join(img_dir, f"{product_id}.png")
+        print("File path to remove:", image_file)
+        if os.path.isfile(image_file):
+            os.remove(image_file)
 
     # Supprime le produit de la base
     db.session.delete(product_to_remove)

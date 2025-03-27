@@ -46,6 +46,7 @@ def add_product():
 
         # Appel méthode pour ajouter un nouveau produit
         add_new_product(
+            id=product_id,
             name=name,
             description=description,
             price=price,
