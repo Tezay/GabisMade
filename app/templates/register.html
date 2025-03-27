@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<h2>Créer un compte</h2>
+<form method="POST" action="{{ url_for('main.register') }}">
+    <label for="first_name">Prénom:</label>
+    <input type="text" id="first_name" name="first_name" required>
+    
+    <label for="last_name">Nom:</label>
+    <input type="text" id="last_name" name="last_name" required>
+    
+    <label for="phone_number">Numéro de téléphone:</label>
+    <input type="text" id="phone_number" name="phone_number">
+    
+    <label for="password">Mot de passe:</label>
+    <input type="password" id="password" name="password" required>
+    
+    <label for="confirm_password">Confirmer le mot de passe:</label>
+    <input type="password" id="confirm_password" name="confirm_password" required>
+    
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    
+    <button type="submit">S'inscrire</button>
+</form>
+{% endblock %}

@@ -1,4 +1,4 @@
-from .models import Product
+from .models import Product, User
 from . import db
 
 def add_new_product(name, description, price, stock=0, is_active=True, image_path=None):
@@ -30,3 +30,24 @@ def remove_product(product_id):
     db.session.delete(product_to_remove)
     db.session.commit()
     return True
+
+def is_device_id_known(device_id):
+    # Debug: Check device_id in database
+    print(f"Checking if device_id {device_id} is known.")
+    return User.query.filter_by(device_id=device_id).first() is not None
+
+def add_new_user(first_name, last_name, phone_number, password, device_id, privilege_level="user"):
+    # Debug: Creating new user
+    print(f"Creating user: {first_name} {last_name}, Device ID: {device_id}")
+    new_user = User(
+        first_name=first_name,
+        last_name=last_name,
+        phone_number=phone_number,
+        device_id=device_id,
+        privilege_level=privilege_level
+        
+    )
+    new_user.set_password(password)
+    db.session.add(new_user)
+    db.session.commit()
+    return new_user

@@ -1,6 +1,7 @@
-from flask import request, redirect, url_for, render_template
-from .utils import add_new_product, remove_product
+from flask import request, redirect, url_for, render_template, make_response, flash
+from .utils import add_new_product, remove_product, add_new_user, is_device_id_known
 from .models import Product
+import uuid
 from flask import Blueprint, redirect, url_for, flash
 
 # Crée un Blueprint pour les routes principales
@@ -59,3 +60,47 @@ def delete_product(product_id):
     else:
         flash("Produit introuvable ou ID invalide.", "error")
     return redirect(url_for('main.list_products'))
+
+
+@bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        phone_number = request.form['phone_number']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+    
+        if password != confirm_password:
+            print("Passwords do not match.")
+            return render_template('register.html', error="Les mots de passe ne correspondent pas.")
+
+        # Retrieve or generate device_id from cookies
+        device_id = request.cookies.get('device_id')
+        if not device_id:
+            device_id = str(uuid.uuid4())
+            print(f"Generated new device_id: {device_id}")
+
+        # Check if device_id is already known
+        if is_device_id_known(device_id):
+            print("Device ID already known.")
+            return render_template('register.html', error="Un compte a déjà été créé depuis cet appareil.")
+
+        # Create the user in the database
+        add_new_user(
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
+            password=password,
+            device_id=device_id,
+        )
+        print("User successfully created.")
+
+        # Set device_id in cookies and redirect
+        response = make_response(redirect(url_for('main.list_products')))
+        # Faudrait ici plutôt renvoyer user_id et le mettre dans les cookies (utiliser une méthode de User())
+        response.set_cookie('device_id', device_id)
+        return response
+
+    return render_template('register.html')

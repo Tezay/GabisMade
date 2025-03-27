@@ -8,11 +8,13 @@ class User(db.Model):
     __tablename__ = 'users'
 
     # Colonnes de la table
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4())) # ID unique
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=False)
     hashed_password = db.Column(db.String(128), nullable=False)
     privilege_level = db.Column(db.String(50), nullable=False)  # exemple : "admin", "user", etc.
+    device_id = db.Column(db.String(36), unique=True, nullable=True)  # Device ID for account creation limit
 
     # Méthodes pour gérer le mot de passe
     def set_password(self, password):
