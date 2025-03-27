@@ -24,10 +24,12 @@
 </div>
 <hr>
 
+{% if admin_privilege %}
 <form method="POST" action="{{ url_for('main.delete_product', product_id=product.id) }}" onsubmit="return confirm('Es-tu sûr de vouloir supprimer ce produit ?');">
     <button type="submit" class="delete-button">
         Supprimer ce produit
     </button>
 </form>
+{% endif %}
 
 {% endblock %}

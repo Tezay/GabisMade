@@ -51,3 +51,10 @@ def add_new_user(first_name, last_name, phone_number, password, device_id, privi
     db.session.add(new_user)
     db.session.commit()
     return new_user
+
+def is_admin(user_id):
+    # Vérifie si l'utilisateur a un niveau de privilège "admin"
+    user = User.query.get(user_id)
+    if user:
+        return user.privilege_level == "admin"
+    return False

@@ -8,7 +8,11 @@
 
 {% block content %}
     <h1>Produits disponibles</h1>
-    <a href="{{ url_for('main.add_product') }}">Ajouter un produit</a>
+
+    {% if admin_privilege %}
+        <a href="{{ url_for('main.add_product') }}">Ajouter un produit</a>
+    {% endif %}
+
     <hr>
     {% for product in products %}
         <div class="product">
