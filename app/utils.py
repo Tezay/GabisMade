@@ -1,3 +1,4 @@
+import unicodedata
 from .models import Product, User
 from . import db
 
@@ -39,6 +40,11 @@ def is_device_id_known(device_id):
 def add_new_user(first_name, last_name, phone_number, password, device_id, privilege_level="user"):
     # Debug: Creating new user
     print(f"Creating user: {first_name} {last_name}, Device ID: {device_id}")
+    
+    # Capitalize first character of first_name and last_name
+    first_name = first_name.capitalize()
+    last_name = last_name.capitalize()
+    
     new_user = User(
         first_name=first_name,
         last_name=last_name,
@@ -59,9 +65,25 @@ def is_admin(user_id):
         return user.privilege_level == "admin"
     return False
 
+def normalize_string(s):
+    # Supprime les accents, convertit en minuscules et enlève les espaces superflus
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', s)
+        if unicodedata.category(c) != 'Mn'
+    ).lower().strip()
+
 def is_name_taken(first_name, last_name):
-    # Vérifie si un utilisateur avec le même nom et prénom existe déjà
-    return User.query.filter_by(first_name=first_name, last_name=last_name).first() is not None
+    # Normalise les noms et prénoms pour la comparaison
+    normalized_first_name = normalize_string(first_name)
+    normalized_last_name = normalize_string(last_name)
+
+    # Récupère tous les utilisateurs et vérifie les noms normalisés
+    users = User.query.all()
+    for user in users:
+        if (normalize_string(user.first_name) == normalized_first_name and
+                normalize_string(user.last_name) == normalized_last_name):
+            return True
+    return False
 
 def update_device_id(user, new_device_id):
     # Met à jour le device_id de l'utilisateur si nécessaire
