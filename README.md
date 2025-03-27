@@ -29,7 +29,6 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-
 ### 4. Installer les dépendances
 
 ```bash
@@ -50,7 +49,17 @@ exit()
 ```
 ##### ⚠️ Le fichier site.db sera généré dans le dossier instance/
 
-### 6. Lancer le serveur Flask
+### 6. Créer un compte administrateur
+
+Exécutez le script `init_admin.py` pour créer un compte administrateur avec un mot de passe généré aléatoirement :
+
+```bash
+python init_admin.py
+```
+
+Le mot de passe sera affiché dans la console.
+
+### 7. Lancer le serveur Flask
 
 ```bash
 flask run

@@ -16,6 +16,7 @@ def before_request():
     device_id = request.cookies.get('device_id')
     g.device_id_known = is_device_id_known(device_id) if device_id else False
     g.user_logged_in = bool(request.cookies.get('user_id'))
+    g.user_is_admin = is_admin(request.cookies.get('user_id'))
 
 
 # Route pour ajouter un produit (à la base de données)

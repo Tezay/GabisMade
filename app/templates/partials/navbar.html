@@ -20,6 +20,9 @@
                     <a href="{{ url_for('main.login') }}">Se connecter</a>
                 {% endif %}
             {% endif %}
+            {% if g.user_is_admin %}
+                <a href="{{ url_for('main.list_users') }}">Liste des utilisateurs</a>
+            {% endif %}
         </div>
     </div>
 </nav>
