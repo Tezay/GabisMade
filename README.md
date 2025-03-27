@@ -67,7 +67,7 @@ flask run
 
 ## Pour réinitialiser la base de données
 
-### Exécuter le script app/reset_db.py
+### Exécuter le script reset_db.py
 
 ```bash
 python reset_db.py
