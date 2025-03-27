@@ -1,5 +1,5 @@
 from flask import request, redirect, url_for, render_template, make_response, flash, abort, g
-from .utils import add_new_product, remove_product, add_new_user, is_device_id_known, is_admin, is_name_taken, update_device_id, update_user_field, remove_user
+from .utils import add_new_product, remove_product, add_new_user, is_device_id_known, is_admin, is_name_taken, update_device_id, update_user_field, remove_user, update_product_field_util
 from .models import Product, User
 import uuid
 from flask import Blueprint, redirect, url_for, flash
@@ -99,6 +99,22 @@ def delete_product(product_id):
     else:
         flash("Produit introuvable ou ID invalide.", "error")
     return redirect(url_for('main.list_products'))
+
+
+@bp.route('/update_product_field/<product_id>', methods=['POST'])
+def update_product_field(product_id):
+    admin_id = request.cookies.get('user_id')
+    if not admin_id or not is_admin(admin_id):
+        abort(403)  # Accès interdit si l'utilisateur n'est pas admin
+
+    field_name = request.form.get('field_name')
+    new_value = request.form.get('new_value')
+
+    if update_product_field_util(product_id, field_name, new_value):
+        flash(f"Champ '{field_name}' mis à jour avec succès.", "success")
+    else:
+        flash(f"Échec de la mise à jour du champ '{field_name}'.", "error")
+    return redirect(url_for('main.product', product_id=product_id))
 
 
 @bp.route('/login', methods=['GET', 'POST'])

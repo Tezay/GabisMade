@@ -13,11 +13,19 @@
 <a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
 <hr>
 <div class="product-details">
-    <h2>{{ product.name }}</h2>
-    <p><strong>Description :</strong> {{ product.description }}</p>
-    <p><strong>Prix :</strong> {{ product.price }} €</p>
-    <p><strong>Stock :</strong> {{ product.stock }}</p>
-    <p><strong>Actif :</strong> {{ 'Oui' if product.is_active else 'Non' }}</p>
+    <h2 onclick="editField('{{ product.id }}', 'name', '{{ product.name }}')">{{ product.name }}</h2>
+    <p><strong>Description :</strong> 
+        <span onclick="editField('{{ product.id }}', 'description', '{{ product.description }}')">{{ product.description }}</span>
+    </p>
+    <p><strong>Prix :</strong> 
+        <span onclick="editField('{{ product.id }}', 'price', '{{ product.price }}')">{{ product.price }} €</span>
+    </p>
+    <p><strong>Stock :</strong> 
+        <span onclick="editField('{{ product.id }}', 'stock', '{{ product.stock }}')">{{ product.stock }}</span>
+    </p>
+    <p><strong>Actif :</strong> 
+        <span onclick="editField('{{ product.id }}', 'is_active', '{{ product.is_active }}')">{{ 'Oui' if product.is_active else 'Non' }}</span>
+    </p>
     {% if product.image_path %}
         <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}">
     {% endif %}
@@ -30,6 +38,31 @@
         Supprimer ce produit
     </button>
 </form>
+<script>
+    function editField(productId, fieldName, currentValue) {
+        const newValue = prompt(`Modifier le champ "${fieldName}" (actuel: ${currentValue}):`, currentValue);
+        if (newValue !== null && newValue !== currentValue) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/update_product_field/${productId}`;
+
+            const fieldInput = document.createElement('input');
+            fieldInput.type = 'hidden';
+            fieldInput.name = 'field_name';
+            fieldInput.value = fieldName;
+            form.appendChild(fieldInput);
+
+            const valueInput = document.createElement('input');
+            valueInput.type = 'hidden';
+            valueInput.name = 'new_value';
+            valueInput.value = newValue;
+            form.appendChild(valueInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
 {% endif %}
 
 {% endblock %}

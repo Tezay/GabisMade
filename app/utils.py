@@ -1,12 +1,9 @@
-import unicodedata
-import os
 from .models import Product, User
 from . import db
 
-def add_new_product(id, name, description, price, stock=0, is_active=True, image_path=None):
+def add_new_product(name, description, price, stock=0, is_active=True, image_path=None):
     # Crée un nouveau produit
     new_product = Product(
-        id=id,
         name=name,
         description=description,
         price=price,
@@ -27,16 +24,7 @@ def remove_product(product_id):
     
     if product_to_remove is None:
         # Aucun produit trouvé avec cet ID
-        print("Aucun produit trouvé avec cet ID.")
         return False
-
-    # Supprime le fichier d'image associé si présent
-    if product_to_remove.image_path:
-        img_dir = os.path.join("app", "static", "img")
-        image_file = os.path.join(img_dir, f"{product_id}.png")
-        print("File path to remove:", image_file)
-        if os.path.isfile(image_file):
-            os.remove(image_file)
 
     # Supprime le produit de la base
     db.session.delete(product_to_remove)
@@ -51,11 +39,6 @@ def is_device_id_known(device_id):
 def add_new_user(first_name, last_name, phone_number, password, device_id, privilege_level="user"):
     # Debug: Creating new user
     print(f"Creating user: {first_name} {last_name}, Device ID: {device_id}")
-    
-    # Capitalize first character of first_name and last_name
-    first_name = first_name.capitalize()
-    last_name = last_name.capitalize()
-    
     new_user = User(
         first_name=first_name,
         last_name=last_name,
@@ -76,25 +59,9 @@ def is_admin(user_id):
         return user.privilege_level == "admin"
     return False
 
-def normalize_string(s):
-    # Supprime les accents, convertit en minuscules et enlève les espaces superflus
-    return ''.join(
-        c for c in unicodedata.normalize('NFD', s)
-        if unicodedata.category(c) != 'Mn'
-    ).lower().strip()
-
 def is_name_taken(first_name, last_name):
-    # Normalise les noms et prénoms pour la comparaison
-    normalized_first_name = normalize_string(first_name)
-    normalized_last_name = normalize_string(last_name)
-
-    # Récupère tous les utilisateurs et vérifie les noms normalisés
-    users = User.query.all()
-    for user in users:
-        if (normalize_string(user.first_name) == normalized_first_name and
-                normalize_string(user.last_name) == normalized_last_name):
-            return True
-    return False
+    # Vérifie si un utilisateur avec le même nom et prénom existe déjà
+    return User.query.filter_by(first_name=first_name, last_name=last_name).first() is not None
 
 def update_device_id(user, new_device_id):
     # Met à jour le device_id de l'utilisateur si nécessaire
@@ -118,6 +85,26 @@ def remove_user(user_id):
     user_to_remove = User.query.get(user_id)
     if user_to_remove:
         db.session.delete(user_to_remove)
+        db.session.commit()
+        return True
+    return False
+
+
+def update_product_field_util(product_id, field_name, new_value):
+    # Recherche le produit correspondant à l'ID
+    product = Product.query.get(product_id)
+    if not product:
+        return False
+
+    # Mise à jour du champ spécifié
+    if hasattr(product, field_name):
+        if field_name == "price":
+            new_value = float(new_value)
+        elif field_name == "stock":
+            new_value = int(new_value)
+        elif field_name == "is_active":
+            new_value = new_value.lower() in ['true', '1', 'oui']
+        setattr(product, field_name, new_value)
         db.session.commit()
         return True
     return False
