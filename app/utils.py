@@ -1,9 +1,10 @@
 from .models import Product, User
 from . import db
 
-def add_new_product(name, description, price, stock=0, is_active=True, image_path=None):
+def add_new_product(id, name, description, price, stock=0, is_active=True, image_path=None):
     # Crée un nouveau produit
     new_product = Product(
+        id=id,
         name=name,
         description=description,
         price=price,
