@@ -1,8 +1,329 @@
 {% extends "base.html" %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}GabisMade - Produits locaux de la campagne à Paris{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(rgba(45, 110, 62, 0.8), rgba(45, 110, 62, 0.8)), 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f0f0f0" width="1200" height="600"/><path fill="%232d6e3e" d="M0 300L50 325L100 300L150 275L200 300L250 325L300 300L350 275L400 300L450 325L500 300L550 275L600 300L650 325L700 300L750 275L800 300L850 325L900 300L950 275L1000 300L1050 325L1100 300L1150 275L1200 300V600H0V300Z"/></svg>');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 6rem 2rem;
+    text-align: center;
+    border-radius: 0 0 50px 50px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    animation: fadeInUp 1s ease-out 0.2s;
+    animation-fill-mode: both;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 1s ease-out 0.4s;
+    animation-fill-mode: both;
+}
+
+.hero-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.hero-btn-primary {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.hero-btn-primary:hover {
+    background-color: #e55a2b;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-btn-secondary {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.hero-btn-secondary:hover {
+    background-color: white;
+    color: var(--primary-color);
+}
+
+/* Features Section */
+.features-section {
+    padding: 4rem 2rem;
+    background-color: white;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow);
+}
+
+.feature-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.feature-title {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* How it works */
+.how-it-works {
+    background-color: var(--background-light);
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 3rem auto;
+}
+
+.step-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    position: relative;
+    box-shadow: var(--shadow);
+}
+
+.step-number {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--accent-color);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* CTA Section */
+.cta-section {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin: 4rem 0;
+    border-radius: var(--border-radius);
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hero-section {
+        padding: 4rem 1rem;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Bonjour {{ first_name }} !</h1>
-<p style="font-size: small;">Niveau de privilège : {{ privilege_level }}</p>
+<!-- Hero Section -->
+<div class="hero-section">
+    <h1 class="hero-title">Bienvenue {{ first_name }} ! 🌾</h1>
+    <p class="hero-subtitle">Des produits frais de la campagne livrés directement à Paris</p>
+    <div class="hero-buttons">
+        <a href="{{ url_for('main.list_products') }}" class="hero-btn hero-btn-primary">
+            Découvrir nos produits
+        </a>
+        <a href="#how-it-works" class="hero-btn hero-btn-secondary">
+            Comment ça marche ?
+        </a>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <h2 style="text-align: center; margin-bottom: 3rem; color: var(--primary-color);">
+        Pourquoi choisir GabisMade ?
+    </h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🚜</div>
+            <h3 class="feature-title">Direct Producteur</h3>
+            <p>Des produits frais provenant directement de nos producteurs partenaires en Seine-et-Marne et régions voisines.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌱</div>
+            <h3 class="feature-title">100% Local</h3>
+            <p>Soutenez l'agriculture locale et réduisez l'empreinte carbone avec des produits cultivés près de chez vous.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💚</div>
+            <h3 class="feature-title">Qualité Garantie</h3>
+            <p>Des produits sélectionnés avec soin, cultivés dans le respect de la nature et des saisons.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🤝</div>
+            <h3 class="feature-title">Prix Justes</h3>
+            <p>Des prix équitables pour les producteurs et accessibles pour les consommateurs, sans intermédiaires.</p>
+        </div>
+    </div>
+</div>
+
+<!-- How it Works Section -->
+<div class="how-it-works" id="how-it-works">
+    <h2 style="color: var(--primary-color); margin-bottom: 1rem;">Comment ça marche ?</h2>
+    <p style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 3rem;">
+        Commander vos produits locaux n'a jamais été aussi simple !
+    </p>
+    
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Parcourez</h3>
+            <p>Découvrez notre sélection de produits frais de saison</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Réservez</h3>
+            <p>Réservez vos produits préférés en ligne</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Récupérez</h3>
+            <p>Venez chercher votre commande le week-end à Paris</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <h3>Savourez</h3>
+            <p>Profitez de produits frais et locaux !</p>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="cta-section">
+    <h2 class="cta-title">Prêt à découvrir le goût authentique de la campagne ?</h2>
+    <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+        Rejoignez notre communauté et soutenez les producteurs locaux
+    </p>
+    {% if not g.user_logged_in %}
+        <a href="{{ url_for('main.register') }}" class="hero-btn hero-btn-primary">
+            Créer mon compte gratuitement
+        </a>
+    {% else %}
+        <a href="{{ url_for('main.list_products') }}" class="hero-btn hero-btn-primary">
+            Voir les produits disponibles
+        </a>
+    {% endif %}
+</div>
+
+<!-- Admin Info -->
+{% if privilege_level == "admin" %}
+<div style="background-color: #fff3cd; padding: 1rem; border-radius: var(--border-radius); margin-top: 2rem; text-align: center;">
+    <p style="color: #856404; margin: 0;">
+        👑 Mode administrateur activé - 
+        <a href="{{ url_for('main.add_product') }}">Ajouter un produit</a> | 
+        <a href="{{ url_for('main.list_users') }}">Gérer les utilisateurs</a>
+    </p>
+</div>
+{% endif %}
+
+<script>
+// Smooth scroll pour les ancres
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Animation au scroll pour les cartes
+const cards = document.querySelectorAll('.feature-card, .step-card');
+const cardObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, { threshold: 0.1 });
+
+cards.forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+    cardObserver.observe(card);
+});
+</script>
 {% endblock %}

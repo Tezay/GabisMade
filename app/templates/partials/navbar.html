@@ -1,28 +1,169 @@
-<nav class="navbar">
-    <div class="navbar-container">
-        <a href="#" class="navbar-logo">Logo</a>
-        <button class="navbar-toggle" aria-label="Toggle navigation">
-            ☰
-        </button>
-        <div class="navbar-links">
-            <a href="{{ url_for('main.home') }}">Accueil</a>
-            <a href="{{ url_for('main.list_products') }}">Produits</a>
-            <a href="#">Contact</a>
-            <a href="#">À propos</a>
-            <a href="#" class="cart-button">Mon panier</a>
-            {% if g.user_logged_in %}
-                <a href="{{ url_for('main.user_profile', user_id=request.cookies.get('user_id')) }}">Mon compte</a>
-            {% else %}
-                {% if g.device_id_known %}
-                    <a href="{{ url_for('main.login') }}">Se connecter</a>
-                {% else %}
-                    <a href="{{ url_for('main.register') }}">Créer mon compte</a>
-                    <a href="{{ url_for('main.login') }}">Se connecter</a>
-                {% endif %}
-            {% endif %}
-            {% if g.user_is_admin %}
-                <a href="{{ url_for('main.list_users') }}">Liste des utilisateurs</a>
-            {% endif %}
-        </div>
+<nav class="navbar" id="navbar">
+    <div class="logo-container">
+        <a href="{{ url_for('main.home') }}" class="logo">
+            <svg width="50" height="50" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Panier tressé style artisanal -->
+                <g transform="translate(50, 50)">
+                    <!-- Anse du panier -->
+                    <path d="M-20 -5 Q0 -20 20 -5" 
+                          fill="none" 
+                          stroke="#8b6f47" 
+                          stroke-width="3"
+                          stroke-linecap="round"/>
+                    
+                    <!-- Corps du panier avec effet tressé -->
+                    <path d="M-22 -5 L-18 20 L18 20 L22 -5 Z" 
+                          fill="#a0826d" 
+                          stroke="#8b6f47" 
+                          stroke-width="2"/>
+                    
+                    <!-- Motif tressé horizontal -->
+                    <path d="M-20 0 L20 0 M-19 5 L19 5 M-18 10 L18 10 M-17 15 L17 15" 
+                          stroke="#8b6f47" 
+                          stroke-width="1" 
+                          opacity="0.4"/>
+                    
+                    <!-- Motif tressé vertical -->
+                    <path d="M-15 -5 L-13 20 M-8 -5 L-7 20 M-1 -5 L0 20 M6 -5 L7 20 M13 -5 L15 20" 
+                          stroke="#8b6f47" 
+                          stroke-width="1" 
+                          opacity="0.3"/>
+                    
+                    <!-- Produits dans le panier -->
+                    <!-- Pain -->
+                    <ellipse cx="-8" cy="-8" rx="6" ry="4" fill="#d4a574" transform="rotate(-20)"/>
+                    <!-- Légumes -->
+                    <circle cx="5" cy="-10" r="5" fill="#ff6b35"/> <!-- Tomate -->
+                    <circle cx="0" cy="-12" r="4" fill="#ffd700"/> <!-- Citron -->
+                    <ellipse cx="-5" cy="-11" rx="3" ry="5" fill="#8bc34a" transform="rotate(15)"/> <!-- Concombre -->
+                    <!-- Petites feuilles -->
+                    <path d="M3 -15 Q5 -17 7 -15" fill="#228b22"/>
+                    <path d="M-7 -13 Q-5 -15 -3 -13" fill="#228b22"/>
+                </g>
+            </svg>
+            <div class="logo-text">
+                <span class="logo-main">Gabi's Made</span>
+                <span class="logo-tagline">Fait maison</span>
+            </div>
+        </a>
     </div>
+    
+    <div id="menu" class="nav-links">
+        <ul>
+            <li><a href="{{ url_for('main.home') }}" class="{% if request.endpoint == 'main.home' %}active{% endif %}">Accueil</a></li>
+            <li><a href="{{ url_for('main.about') }}" class="{% if request.endpoint == 'main.about' %}active{% endif %}">À propos</a></li>
+            <li><a href="{{ url_for('main.list_products') }}" class="{% if request.endpoint == 'main.list_products' %}active{% endif %}">Boutique</a></li>
+            <li><a href="{{ url_for('main.contact') }}" class="{% if request.endpoint == 'main.contact' %}active{% endif %}">Contact</a></li>
+            <li>
+                <a href="{{ url_for('main.cart') }}" class="cart-link {% if request.endpoint == 'main.cart' %}active{% endif %}">
+                    <span>Panier</span>
+                    <span class="cart-badge" id="cart-badge" style="display: none;">0</span>
+                </a>
+            </li>
+            
+            {% if g.user_logged_in %}
+                <li>
+                    <a href="{{ url_for('main.user_profile', user_id=request.cookies.get('user_id')) }}" class="btn-login">
+                        Mon compte
+                    </a>
+                </li>
+                {% if g.user_is_admin %}
+                    <li>
+                        <a href="{{ url_for('main.list_users') }}" style="color: #ffd700;">👑 Admin</a>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li>
+                    <a href="{{ url_for('main.login') }}" class="btn-login">Connexion</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    
+    <label class="hamburger">
+        <input type="checkbox" id="menu-toggle">
+        <svg viewBox="0 0 32 32">
+            <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+            <path class="line" d="M7 16 27 16"></path>
+        </svg>
+    </label>
 </nav>
+
+<!-- Overlay pour le menu mobile -->
+<div class="menu-overlay" id="menu-overlay"></div>
+
+<script>
+// Fonction pour gérer le menu responsive
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('menu');
+    const menuOverlay = document.getElementById('menu-overlay');
+    const navbar = document.getElementById('navbar');
+    
+    // Toggle menu mobile
+    menuToggle.addEventListener('change', function() {
+        if (window.innerWidth <= 1158) {
+            if (this.checked) {
+                menu.classList.add('active');
+                menuOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+    });
+    
+    // Fermer le menu quand on clique sur l'overlay
+    menuOverlay.addEventListener('click', function() {
+        menuToggle.checked = false;
+        menu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+    
+    // Fermer le menu quand on clique sur un lien
+    const menuLinks = document.querySelectorAll('.nav-links a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 1158) {
+                menuToggle.checked = false;
+                menu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+    
+    // Gérer le redimensionnement de la fenêtre
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth > 1158) {
+                menu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                menuToggle.checked = false;
+                document.body.style.overflow = '';
+                menu.style.right = '';
+                menu.style.opacity = '';
+            }
+        }, 250);
+    });
+    
+    // Effet de scroll sur la navbar
+    let lastScroll = 0;
+    window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    });
+});
+</script>

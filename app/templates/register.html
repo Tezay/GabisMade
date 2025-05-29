@@ -1,29 +1,264 @@
 {% extends "base.html" %}
 
-{% block title %}Inscription{% endblock %}
+{% block title %}Inscription - GabisMade{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
 
 {% block content %}
-<h2>Créer un compte</h2>
-<form method="POST" action="{{ url_for('main.register') }}">
-    <label for="first_name">Prénom:</label>
-    <input type="text" id="first_name" name="first_name" required pattern="^[A-Za-zÀ-ÿ-]{2,20}$" title="Le prénom doit contenir entre 2 et 20 caractères, uniquement des lettres ou des tirets.">
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🌱</div>
+            <h1 class="auth-title">Créer un compte</h1>
+            <p class="auth-subtitle">Rejoignez notre communauté de producteurs et consommateurs locaux</p>
+        </div>
+
+        {% if error %}
+        <div class="form-error">
+            <span>⚠️</span>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('main.register') }}" class="auth-form" id="registerForm">
+            <div class="form-group">
+                <label for="first_name" class="form-label">Prénom</label>
+                <div class="input-group">
+                    <span class="input-icon">👤</span>
+                    <input type="text" 
+                           id="first_name" 
+                           name="first_name" 
+                           class="form-input input-with-icon" 
+                           required 
+                           pattern="^[A-Za-zÀ-ÿ-]{2,20}$" 
+                           title="Le prénom doit contenir entre 2 et 20 caractères, uniquement des lettres ou des tirets."
+                           placeholder="Ex: Marie"
+                           autofocus>
+                </div>
+                <div class="validation-message" id="firstNameValidation"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="last_name" class="form-label">Nom</label>
+                <div class="input-group">
+                    <span class="input-icon">👤</span>
+                    <input type="text" 
+                           id="last_name" 
+                           name="last_name" 
+                           class="form-input input-with-icon" 
+                           required 
+                           pattern="^[A-Za-zÀ-ÿ-]{2,20}$" 
+                           title="Le nom doit contenir entre 2 et 20 caractères, uniquement des lettres ou des tirets."
+                           placeholder="Ex: Dupont">
+                </div>
+                <div class="validation-message" id="lastNameValidation"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone_number" class="form-label">Numéro de téléphone</label>
+                <div class="input-group">
+                    <span class="input-icon">📱</span>
+                    <input type="tel" 
+                           id="phone_number" 
+                           name="phone_number" 
+                           class="form-input input-with-icon" 
+                           required 
+                           pattern="^\+?[0-9]{10,15}$" 
+                           title="Le numéro de téléphone doit être valide (10 à 15 chiffres, avec un '+' optionnel)."
+                           placeholder="Ex: 0612345678">
+                </div>
+                <div class="validation-message" id="phoneValidation"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Mot de passe</label>
+                <div class="input-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           class="form-input input-with-icon" 
+                           required 
+                           minlength="6" 
+                           title="Le mot de passe doit contenir au moins 6 caractères."
+                           placeholder="Au moins 6 caractères">
+                    <button type="button" class="password-toggle" onclick="togglePassword('password', 'toggleIcon1')">
+                        <span id="toggleIcon1">👁️</span>
+                    </button>
+                </div>
+                <div class="validation-message" id="passwordValidation"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">Confirmer le mot de passe</label>
+                <div class="input-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" 
+                           id="confirm_password" 
+                           name="confirm_password" 
+                           class="form-input input-with-icon" 
+                           required 
+                           minlength="6" 
+                           title="Le mot de passe doit contenir au moins 6 caractères."
+                           placeholder="Confirmez votre mot de passe">
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirm_password', 'toggleIcon2')">
+                        <span id="toggleIcon2">👁️</span>
+                    </button>
+                </div>
+                <div class="validation-message" id="confirmPasswordValidation"></div>
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" required style="width: auto; margin: 0;">
+                    <span style="font-size: 0.9rem; color: var(--text-light);">
+                        J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a>
+                    </span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-auth">
+                Créer mon compte
+            </button>
+        </form>
+
+        <div class="auth-divider">ou</div>
+
+        <div class="auth-footer">
+            <p>Vous avez déjà un compte ?</p>
+            <a href="{{ url_for('main.login') }}">Se connecter</a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle password visibility
+function togglePassword(inputId, iconId) {
+    const passwordInput = document.getElementById(inputId);
+    const toggleIcon = document.getElementById(iconId);
     
-    <label for="last_name">Nom:</label>
-    <input type="text" id="last_name" name="last_name" required pattern="^[A-Za-zÀ-ÿ-]{2,20}$" title="Le nom doit contenir entre 2 et 20 caractères, uniquement des lettres ou des tirets.">
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.textContent = '🙈';
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.textContent = '👁️';
+    }
+}
+
+// Real-time validation
+const validationRules = {
+    first_name: {
+        pattern: /^[A-Za-zÀ-ÿ-]{2,20}$/,
+        message: 'Entre 2 et 20 caractères, lettres uniquement',
+        validMessage: 'Prénom valide ✓'
+    },
+    last_name: {
+        pattern: /^[A-Za-zÀ-ÿ-]{2,20}$/,
+        message: 'Entre 2 et 20 caractères, lettres uniquement',
+        validMessage: 'Nom valide ✓'
+    },
+    phone_number: {
+        pattern: /^\+?[0-9]{10,15}$/,
+        message: '10 à 15 chiffres, avec un + optionnel',
+        validMessage: 'Numéro valide ✓'
+    },
+    password: {
+        validate: (value) => value.length >= 6,
+        message: 'Au moins 6 caractères',
+        validMessage: 'Mot de passe valide ✓'
+    }
+};
+
+// Validation functions
+function validateField(fieldName, value) {
+    const rule = validationRules[fieldName];
+    const validationElement = document.getElementById(fieldName.replace('_', '') + 'Validation');
     
-    <label for="phone_number">Numéro de téléphone:</label>
-    <input type="text" id="phone_number" name="phone_number" required pattern="^\+?[0-9]{10,15}$" title="Le numéro de téléphone doit être valide (10 à 15 chiffres, avec un '+' optionnel).">
+    if (!value) {
+        validationElement.textContent = '';
+        return false;
+    }
     
-    <label for="password">Mot de passe:</label>
-    <input type="password" id="password" name="password" required minlength="6" title="Le mot de passe doit contenir au moins 6 caractères.">
+    let isValid = false;
+    if (rule.pattern) {
+        isValid = rule.pattern.test(value);
+    } else if (rule.validate) {
+        isValid = rule.validate(value);
+    }
     
-    <label for="confirm_password">Confirmer le mot de passe:</label>
-    <input type="password" id="confirm_password" name="confirm_password" required minlength="6" title="Le mot de passe doit contenir au moins 6 caractères.">
+    if (isValid) {
+        validationElement.className = 'validation-message validation-success';
+        validationElement.innerHTML = `✅ ${rule.validMessage}`;
+    } else {
+        validationElement.className = 'validation-message validation-error';
+        validationElement.innerHTML = `❌ ${rule.message}`;
+    }
     
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+    return isValid;
+}
+
+// Password match validation
+function validatePasswordMatch() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const validationElement = document.getElementById('confirmPasswordValidation');
     
-    <button type="submit">S'inscrire</button>
-</form>
+    if (!confirmPassword) {
+        validationElement.textContent = '';
+        return false;
+    }
+    
+    if (password === confirmPassword) {
+        validationElement.className = 'validation-message validation-success';
+        validationElement.innerHTML = '✅ Les mots de passe correspondent';
+        return true;
+    } else {
+        validationElement.className = 'validation-message validation-error';
+        validationElement.innerHTML = '❌ Les mots de passe ne correspondent pas';
+        return false;
+    }
+}
+
+// Add event listeners
+document.getElementById('first_name').addEventListener('input', function() {
+    validateField('first_name', this.value);
+});
+
+document.getElementById('last_name').addEventListener('input', function() {
+    validateField('last_name', this.value);
+});
+
+document.getElementById('phone_number').addEventListener('input', function() {
+    validateField('phone_number', this.value);
+});
+
+document.getElementById('password').addEventListener('input', function() {
+    validateField('password', this.value);
+    if (document.getElementById('confirm_password').value) {
+        validatePasswordMatch();
+    }
+});
+
+document.getElementById('confirm_password').addEventListener('input', validatePasswordMatch);
+
+// Form submission
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const inputs = this.querySelectorAll('.form-input');
+    let hasError = false;
+    
+    inputs.forEach(input => {
+        if (!input.value.trim()) {
+            input.classList.add('error');
+            hasError = true;
+        }
+    });
+    
+    if (hasError) {
+        e.preventDefault();
+    }
+});
+</script>
 {% endblock %}

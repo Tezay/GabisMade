@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}À propos - GabisMade{% endblock %}
+
+{% block extra_css %}
+<style>
+.about-hero {
+    background: linear-gradient(rgba(45, 110, 62, 0.9), rgba(45, 110, 62, 0.9)), 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect fill="%23f0f0f0" width="1200" height="400"/></svg>');
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 0 0 30px 30px;
+}
+
+.about-content {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+.about-section {
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.value-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.value-card:hover {
+    transform: translateY(-5px);
+}
+
+.value-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.story-section {
+    background-color: var(--background-light);
+    padding: 3rem 2rem;
+    border-radius: var(--border-radius);
+    margin: 3rem 0;
+}
+
+.team-section {
+    text-align: center;
+    margin-top: 4rem;
+}
+
+.team-member {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.team-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 4rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="about-hero">
+    <h1 style="font-size: 3rem; margin-bottom: 1rem;">Notre Histoire</h1>
+    <p style="font-size: 1.3rem; opacity: 0.9;">
+        Connecter la campagne à la ville, un produit à la fois
+    </p>
+</div>
+
+<!-- Contenu principal -->
+<div class="about-content">
+    <!-- Section Introduction -->
+    <div class="about-section">
+        <h2 style="color: var(--primary-color); text-align: center; margin-bottom: 2rem;">
+            Qui sommes-nous ?
+        </h2>
+        <p style="font-size: 1.1rem; line-height: 1.8; text-align: center; color: var(--text-light);">
+            GabisMade est né d'une idée simple : créer un pont direct entre les producteurs 
+            de la campagne et les consommateurs parisiens en quête de produits frais, 
+            locaux et de qualité.
+        </p>
+    </div>
+
+    <!-- Section Histoire -->
+    <div class="story-section">
+        <h3 style="color: var(--primary-color); margin-bottom: 1.5rem;">
+            🌱 L'origine du projet
+        </h3>
+        <p style="line-height: 1.8; margin-bottom: 1rem;">
+            Lors de mes nombreux séjours à la campagne, j'ai eu la chance de rencontrer 
+            des producteurs passionnés qui cultivent avec amour des produits d'une qualité 
+            exceptionnelle. De retour à Paris, j'ai réalisé que ces trésors du terroir 
+            restaient souvent méconnus des citadins.
+        </p>
+        <p style="line-height: 1.8;">
+            C'est ainsi qu'est née l'idée de GabisMade : une plateforme simple permettant 
+            aux Parisiens de réserver des produits frais directement auprès des producteurs, 
+            sans intermédiaire, et de les récupérer facilement en ville.
+        </p>
+    </div>
+
+    <!-- Section Valeurs -->
+    <div class="about-section">
+        <h2 style="color: var(--primary-color); text-align: center; margin-bottom: 2rem;">
+            Nos Valeurs
+        </h2>
+        <div class="about-grid">
+            <div class="value-card">
+                <div class="value-icon">🤝</div>
+                <h3>Circuit Court</h3>
+                <p>Du producteur à votre table, sans intermédiaire. Des prix justes pour tous.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">🌿</div>
+                <h3>Respect de l'Environnement</h3>
+                <p>Produits locaux, de saison, cultivés dans le respect de la nature.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">❤️</div>
+                <h3>Soutien aux Producteurs</h3>
+                <p>Valoriser le travail de nos agriculteurs et garantir leur juste rémunération.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">✨</div>
+                <h3>Qualité Premium</h3>
+                <p>Sélection rigoureuse de produits frais, savoureux et authentiques.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Équipe -->
+    <div class="team-section">
+        <h2 style="color: var(--primary-color); margin-bottom: 2rem;">
+            L'Équipe
+        </h2>
+        <div class="team-member">
+            <div class="team-photo">👤</div>
+            <h3>Gabi</h3>
+            <p style="color: var(--primary-color); margin-bottom: 1rem;">Fondateur</p>
+            <p style="color: var(--text-light); line-height: 1.6;">
+                Passionné par les produits du terroir et convaincu que nous pouvons 
+                créer un système plus juste et plus direct entre producteurs et consommateurs.
+            </p>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div style="text-align: center; margin-top: 4rem; padding: 3rem; background-color: var(--primary-color); color: white; border-radius: var(--border-radius);">
+        <h2 style="margin-bottom: 1rem;">Rejoignez l'aventure !</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">
+            Soutenez les producteurs locaux et savourez le meilleur de la campagne
+        </p>
+        <a href="{{ url_for('main.list_products') }}" class="hero-btn hero-btn-primary" style="background-color: var(--accent-color);">
+            Découvrir nos produits
+        </a>
+    </div>
+</div>
+
+<script>
+// Animation au scroll
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.about-section, .value-card, .team-member').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+    observer.observe(el);
+});
+</script>
+{% endblock %}

@@ -279,3 +279,32 @@ def user_profile(user_id):
         abort(404)  # Utilisateur non trouvé
 
     return render_template('user_profile.html', user=user)
+
+@bp.route('/about')
+def about():
+    """Page À propos"""
+    return render_template('about.html')
+
+
+@bp.route('/contact', methods=['GET', 'POST'])
+def contact():
+    """Page Contact"""
+    if request.method == 'POST':
+        # Traitement du formulaire de contact
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+        
+        # Ici vous pourriez envoyer un email ou sauvegarder le message
+        flash("Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.", "success")
+        return redirect(url_for('main.contact'))
+    
+    return render_template('contact.html')
+
+
+@bp.route('/cart')
+def cart():
+    """Page du panier de réservation"""
+    return render_template('cart.html')

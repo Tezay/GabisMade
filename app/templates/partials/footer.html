@@ -1,3 +1,49 @@
 <footer class="footer">
-    <p>&copy; 2025 GabisMade. Tous droits réservés.</p>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>🌾 GabisMade</h3>
+            <p>Des produits frais de la campagne directement à Paris. Soutenons nos producteurs locaux !</p>
+            <div style="margin-top: 1rem;">
+                <a href="#" style="margin-right: 1rem;">📘</a>
+                <a href="#" style="margin-right: 1rem;">📷</a>
+                <a href="#" style="margin-right: 1rem;">🐦</a>
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <h3>Navigation</h3>
+            <ul>
+                <li><a href="{{ url_for('main.home') }}">Accueil</a></li>
+                <li><a href="{{ url_for('main.list_products') }}">Nos Produits</a></li>
+                <li><a href="#">Nos Producteurs</a></li>
+                <li><a href="#">Comment ça marche</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-section">
+            <h3>Informations</h3>
+            <ul>
+                <li><a href="{{ url_for('main.about') }}">À propos</a></li>
+                <li><a href="#">Livraison & Récupération</a></li>
+                <li><a href="#">Conditions d'utilisation</a></li>
+                <li><a href="#">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-section">
+            <h3>Contact</h3>
+            <p>📧 contact@gabismade.fr</p>
+            <p>📱 06 XX XX XX XX</p>
+            <p>📍 Paris & Île-de-France</p>
+            <p style="margin-top: 1rem;">
+                <small>Horaires de récupération :<br>
+                Samedi : 10h - 14h<br>
+                Dimanche : 10h - 13h</small>
+            </p>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>&copy; 2025 GabisMade. Tous droits réservés. Fait avec ❤️ pour connecter la campagne à la ville.</p>
+    </div>
 </footer>

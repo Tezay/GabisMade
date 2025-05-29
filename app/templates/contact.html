@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}Contact - GabisMade{% endblock %}
+
+{% block extra_css %}
+<style>
+.contact-hero {
+    background: linear-gradient(rgba(45, 110, 62, 0.9), rgba(45, 110, 62, 0.9));
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    border-radius: 0 0 30px 30px;
+}
+
+.contact-container {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 3rem;
+}
+
+.contact-form-section {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.contact-info-section {
+    padding: 2.5rem;
+}
+
+.contact-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.contact-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.contact-form input,
+.contact-form textarea,
+.contact-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus,
+.contact-form select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(45, 110, 62, 0.1);
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.info-card {
+    background: var(--background-light);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateX(10px);
+}
+
+.info-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+.info-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.info-content p {
+    color: var(--text-light);
+    margin: 0;
+}
+
+.faq-section {
+    margin-top: 4rem;
+    padding: 3rem;
+    background: var(--background-light);
+    border-radius: var(--border-radius);
+}
+
+.faq-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    box-shadow: var(--shadow);
+}
+
+.faq-question {
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.faq-answer {
+    margin-top: 1rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    display: none;
+}
+
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+.faq-item.active .faq-question::after {
+    content: '−';
+}
+
+.faq-question::after {
+    content: '+';
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .contact-info-section {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="contact-hero">
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Contactez-nous</h1>
+    <p style="font-size: 1.2rem; opacity: 0.9;">
+        Une question ? Une suggestion ? Nous sommes à votre écoute !
+    </p>
+</div>
+
+<div class="contact-container">
+    <div class="contact-grid">
+        <!-- Formulaire de contact -->
+        <div class="contact-form-section">
+            <h2 style="color: var(--primary-color); margin-bottom: 2rem;">
+                Envoyez-nous un message
+            </h2>
+            
+            <form class="contact-form" id="contactForm" method="POST" action="{{ url_for('main.contact') }}">
+                <div class="form-group">
+                    <label for="name">Nom complet *</label>
+                    <input type="text" id="name" name="name" required placeholder="Jean Dupont">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="jean.dupont@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Téléphone</label>
+                    <input type="tel" id="phone" name="phone" placeholder="06 12 34 56 78">
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Sujet *</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Choisissez un sujet</option>
+                        <option value="question">Question générale</option>
+                        <option value="order">À propos d'une commande</option>
+                        <option value="producer">Devenir producteur partenaire</option>
+                        <option value="suggestion">Suggestion d'amélioration</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="message" required placeholder="Votre message..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                    Envoyer le message
+                </button>
+            </form>
+        </div>
+        
+        <!-- Informations de contact -->
+        <div class="contact-info-section">
+            <h2 style="color: var(--primary-color); margin-bottom: 2rem;">
+                Informations de contact
+            </h2>
+            
+            <div class="info-card">
+                <div class="info-icon">📧</div>
+                <div class="info-content">
+                    <h3>Email</h3>
+                    <p>contact@gabismade.fr</p>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon">📱</div>
+                <div class="info-content">
+                    <h3>Téléphone</h3>
+                    <p>06 XX XX XX XX</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Du lundi au vendredi, 9h-18h</p>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon">📍</div>
+                <div class="info-content">
+                    <h3>Points de récupération</h3>
+                    <p>Paris intra-muros</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Samedi 10h-14h, Dimanche 10h-13h</p>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon">🚚</div>
+                <div class="info-content">
+                    <h3>Livraison</h3>
+                    <p>Livraison groupée disponible</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Pour les commandes de plus de 50€</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section FAQ -->
+    <div class="faq-section">
+        <h2 style="color: var(--primary-color); text-align: center; margin-bottom: 2rem;">
+            Questions Fréquentes
+        </h2>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                Comment fonctionne la réservation ?
+            </div>
+            <div class="faq-answer">
+                C'est très simple ! Parcourez notre boutique, sélectionnez les produits qui vous intéressent, 
+                choisissez la quantité et confirmez votre réservation. Aucun paiement en ligne n'est requis. 
+                Vous payez lors de la récupération de vos produits.
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                Où récupérer ma commande ?
+            </div>
+            <div class="faq-answer">
+                Nous avons plusieurs points de récupération à Paris. L'adresse exacte vous sera communiquée 
+                par email après votre réservation. Les récupérations se font le samedi (10h-14h) et le 
+                dimanche (10h-13h).
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                Puis-je annuler ma réservation ?
+            </div>
+            <div class="faq-answer">
+                Oui, vous pouvez annuler votre réservation jusqu'à 48h avant la date de récupération prévue. 
+                Connectez-vous à votre compte et allez dans "Mes réservations" pour gérer vos commandes.
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                Comment devenir producteur partenaire ?
+            </div>
+            <div class="faq-answer">
+                Nous sommes toujours à la recherche de nouveaux producteurs passionnés ! Envoyez-nous un message 
+                via le formulaire de contact en sélectionnant "Devenir producteur partenaire" et nous vous 
+                recontacterons rapidement.
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-question">
+                Quels modes de paiement acceptez-vous ?
+            </div>
+            <div class="faq-answer">
+                Lors de la récupération de vos produits, nous acceptons les espèces et les cartes bancaires. 
+                Le paiement se fait directement sur place, ce qui vous permet de vérifier vos produits avant 
+                de payer.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message de succès si formulaire envoyé -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div style="position: fixed; top: 100px; right: 20px; background-color: #28a745; color: white; padding: 1rem 2rem; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); z-index: 1000;">
+                {{ message }}
+            </div>
+            <script>
+                setTimeout(() => {
+                    document.querySelector('[style*="position: fixed"]').remove();
+                }, 5000);
+            </script>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<script>
+// Toggle FAQ
+function toggleFAQ(item) {
+    // Fermer tous les autres items
+    document.querySelectorAll('.faq-item').forEach(faq => {
+        if (faq !== item) {
+            faq.classList.remove('active');
+        }
+    });
+    
+    // Toggle l'item cliqué
+    item.classList.toggle('active');
+}
+
+// Animation au scroll
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.info-card, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+    observer.observe(el);
+});
+</script>
+{% endblock %}

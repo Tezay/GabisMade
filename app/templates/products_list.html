@@ -1,32 +1,221 @@
 {% extends 'base.html' %}
 
-{% block title %}Liste des produits{% endblock %}
+{% block title %}Nos Produits du Terroir{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/products_list.css') }}">
 {% endblock %}
 
 {% block content %}
-    <h1>Produits disponibles</h1>
+<div class="products-header">
+    <h1>Nos Produits</h1>
+    <p>Découvrez notre sélection de produits frais directement des producteurs locaux</p>
+</div>
 
+<div class="products-container">
     {% if admin_privilege %}
-        <a href="{{ url_for('main.add_product') }}">Ajouter un produit</a>
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <a href="{{ url_for('main.add_product') }}" class="btn btn-secondary">
+                ➕ Ajouter un nouveau produit
+            </a>
+        </div>
     {% endif %}
 
-    <hr>
-    {% for product in products %}
-        <div class="product">
-            <a href="{{ url_for('main.product', product_id=product.id) }}">
-                <h2>{{ product.name }}</h2>
-            </a>
-            <p><strong>Description :</strong> {{ product.description }}</p>
-            <p><strong>Prix :</strong> {{ product.price }} €</p>
-            <p><strong>Stock :</strong> {{ product.stock }}</p>
-            <p><strong>Actif :</strong> {{ 'Oui' if product.is_active else 'Non' }}</p>
-            {% if product.image_path %}
-                <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}">
-            {% endif %}
+    <!-- Section des filtres -->
+    <div class="filters-section">
+        <h3>Filtrer les produits</h3>
+        <div class="filters-grid">
+            <select class="filter-select" id="filter-producer">
+                <option value="">Tous les producteurs</option>
+                <option value="ferme-martin">Ferme Martin</option>
+                <option value="jardin-bio">Le Jardin Bio</option>
+                <option value="verger-dupont">Verger Dupont</option>
+            </select>
+            <select class="filter-select" id="filter-category">
+                <option value="">Toutes les catégories</option>
+                <option value="legumes">Légumes</option>
+                <option value="fruits">Fruits</option>
+                <option value="produits-laitiers">Produits laitiers</option>
+                <option value="viandes">Viandes & Charcuterie</option>
+                <option value="conserves">Conserves & Confitures</option>
+            </select>
+            <select class="filter-select" id="filter-availability">
+                <option value="">Disponibilité</option>
+                <option value="available">En stock uniquement</option>
+                <option value="all">Tous les produits</option>
+            </select>
+            <select class="filter-select" id="filter-sort">
+                <option value="">Trier par</option>
+                <option value="price-asc">Prix croissant</option>
+                <option value="price-desc">Prix décroissant</option>
+                <option value="name">Nom (A-Z)</option>
+            </select>
         </div>
-        <hr>
-    {% endfor %}
+    </div>
+
+    <!-- Grille des produits -->
+    <div class="products-grid">
+        {% for product in products %}
+            {% if product.is_active %}
+            <a href="{{ url_for('main.product', product_id=product.id) }}" class="product-card fade-in">
+                <!-- Image du produit -->
+                <div class="product-image-container">
+                    {% if product.image_path %}
+                        <img src="{{ url_for('static', filename=product.image_path) }}" 
+                             alt="{{ product.name }}" 
+                             class="product-image">
+                    {% else %}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f0f0f0;">
+                            <span style="font-size: 5rem; color: #ddd;">🥬</span>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Badge de stock -->
+                    {% if product.stock > 10 %}
+                        <span class="stock-badge stock-available">En stock</span>
+                    {% elif product.stock > 0 %}
+                        <span class="stock-badge stock-low">Stock limité</span>
+                    {% else %}
+                        <span class="stock-badge stock-out">Rupture</span>
+                    {% endif %}
+
+                    <!-- Overlay "En savoir plus" -->
+                    <div class="product-overlay">
+                        <div class="overlay-content">
+                            <h3>{{ product.name }}</h3>
+                            <p>{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                            <span class="btn-view-more">En savoir plus →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations du produit -->
+                <div class="product-info">
+                    <div class="product-header-info">
+                        <h2 class="product-name">{{ product.name }}</h2>
+                        <p class="product-producer">Ferme Martin - Seine-et-Marne</p>
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <span class="product-price">{{ "%.2f"|format(product.price) }}€</span>
+                            <span class="product-unit">/unité</span>
+                        </div>
+                        {% if product.stock > 0 %}
+                            <button class="btn-quick-add" onclick="quickAddToCart(event, '{{ product.id }}', '{{ product.name }}', {{ product.price }}, '{{ url_for('static', filename=product.image_path if product.image_path else 'img/default.png') }}', {{ product.stock }})">
+                                Réserver
+                            </button>
+                        {% else %}
+                            <button class="btn-quick-add" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                Indisponible
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if not products %}
+    <div style="text-align: center; padding: 4rem;">
+        <p style="font-size: 1.2rem; color: var(--text-light);">Aucun produit disponible pour le moment.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Animation d'apparition des cartes
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.product-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+
+// Fonction d'ajout rapide au panier
+function quickAddToCart(event, productId, productName, productPrice, productImage, productStock) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Ajouter au panier
+    addToCart(productId, productName, productPrice, productImage, productStock);
+    
+    // Animation du bouton
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '✓ Ajouté';
+    button.style.backgroundColor = 'var(--secondary-color)';
+    
+    // Réinitialiser le bouton après 2 secondes
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.style.backgroundColor = '';
+    }, 2000);
+}
+
+// Fonction de notification
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Animation pour les notifications
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Gestion des filtres (à implémenter avec backend)
+document.querySelectorAll('.filter-select').forEach(select => {
+    select.addEventListener('change', function() {
+        console.log('Filtre appliqué:', this.id, this.value);
+        // Future implémentation du filtrage
+    });
+});
+</script>
 {% endblock %}

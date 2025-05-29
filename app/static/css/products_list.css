@@ -1,11 +1,331 @@
-h1 {
-    color: #333;
+/* Page liste des produits */
+.products-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
 }
 
-.product {
-    margin-bottom: 20px;
+.products-header h1 {
+    position: relative;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: inline-block;
 }
 
-.product img {
-    max-width: 200px;
+.products-header h1::after {
+    content: "";
+    position: absolute;
+    width: 60px;
+    height: 5px;
+    background: var(--secondary-color);
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.products-header p {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    margin-top: 1.5rem;
+}
+
+/* Conteneur des produits */
+.products-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Grille de produits */
+.products-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+/* Carte produit */
+.product-card {
+    position: relative;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-dark);
+    flex: 0 1 calc(25% - 1.5rem);
+    min-width: 280px;
+    max-width: 350px;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Image produit */
+.product-image-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.1);
+}
+
+/* Badge stock */
+.stock-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    z-index: 2;
+}
+
+.stock-available {
+    background-color: rgba(46, 213, 115, 0.9);
+    color: white;
+}
+
+.stock-low {
+    background-color: rgba(255, 179, 0, 0.9);
+    color: white;
+}
+
+.stock-out {
+    background-color: rgba(255, 71, 87, 0.9);
+    color: white;
+}
+
+/* Overlay "En savoir plus" */
+.product-overlay {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(45, 110, 62, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: left 0.4s ease;
+    z-index: 3;
+}
+
+.product-card:hover .product-overlay {
+    left: 0;
+}
+
+.overlay-content {
+    text-align: center;
+    color: white;
+    padding: 2rem;
+}
+
+.overlay-content h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.overlay-content p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+}
+
+.btn-view-more {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background-color: white;
+    color: var(--primary-color);
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-view-more:hover {
+    background-color: var(--secondary-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Informations produit */
+.product-info {
+    padding: 1.5rem;
+    background: white;
+    position: relative;
+}
+
+.product-header-info {
+    margin-bottom: 1rem;
+}
+
+.product-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.product-producer {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.product-producer::before {
+    content: "🌾";
+}
+
+.product-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.product-price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.product-unit {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: normal;
+}
+
+.btn-quick-add {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-quick-add:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.05);
+}
+
+/* Section filtres */
+.filters-section {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 3rem;
+}
+
+.filters-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.filter-select {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: white;
+    cursor: pointer;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(45, 110, 62, 0.1);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .product-card {
+        flex: 0 1 calc(33.333% - 1.5rem);
+    }
+}
+
+@media (max-width: 900px) {
+    .product-card {
+        flex: 0 1 calc(50% - 1rem);
+    }
+}
+
+@media (max-width: 600px) {
+    .products-header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .products-grid {
+        gap: 1.5rem;
+    }
+    
+    .product-card {
+        flex: 0 1 100%;
+        max-width: 400px;
+    }
+    
+    .product-image-container {
+        height: 250px;
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
 }

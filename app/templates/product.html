@@ -1,68 +1,273 @@
 {% extends 'base.html' %}
 
-{% block title %} {{ product.name }} {% endblock %}
+{% block title %}{{ product.name }} - Réservation{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">
 {% endblock %}
 
-
 {% block content %}
-
-<h1>{{ product.name }}</h1>
-<a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
-<hr>
-<div class="product-details">
-    <h2 onclick="editField('{{ product.id }}', 'name', '{{ product.name }}')">{{ product.name }}</h2>
-    <p><strong>Description :</strong> 
-        <span onclick="editField('{{ product.id }}', 'description', '{{ product.description }}')">{{ product.description }}</span>
-    </p>
-    <p><strong>Prix :</strong> 
-        <span onclick="editField('{{ product.id }}', 'price', '{{ product.price }}')">{{ product.price }} €</span>
-    </p>
-    <p><strong>Stock :</strong> 
-        <span onclick="editField('{{ product.id }}', 'stock', '{{ product.stock }}')">{{ product.stock }}</span>
-    </p>
-    <p><strong>Actif :</strong> 
-        <span onclick="editField('{{ product.id }}', 'is_active', '{{ product.is_active }}')">{{ 'Oui' if product.is_active else 'Non' }}</span>
-    </p>
-    {% if product.image_path %}
-        <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}">
-    {% endif %}
+<div class="breadcrumb" style="margin-bottom: 2rem;">
+    <a href="{{ url_for('main.home') }}">Accueil</a> > 
+    <a href="{{ url_for('main.list_products') }}">Produits</a> > 
+    <span>{{ product.name }}</span>
 </div>
-<hr>
+
+<div class="product-detail-container">
+    <div class="product-detail-grid">
+        <!-- Section image -->
+        <div class="product-image-section">
+            {% if product.image_path %}
+                <img src="{{ url_for('static', filename=product.image_path) }}" 
+                     alt="{{ product.name }}" 
+                     class="product-main-image">
+            {% else %}
+                <div class="product-main-image" style="display: flex; align-items: center; justify-content: center; background-color: #f0f0f0;">
+                    <span style="font-size: 8rem; color: #ccc;">🥬</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Section informations -->
+        <div class="product-info-section">
+            <h1 class="product-title-detail">{{ product.name }}</h1>
+
+            <!-- Info producteur -->
+            <div class="producer-info">
+                <img src="{{ url_for('static', filename='img/default-producer.png') }}" alt="Producteur" onerror="this.style.display='none'">
+                <div class="producer-details">
+                    <h3>Ferme Martin</h3>
+                    <p>📍 Seine-et-Marne (77)</p>
+                </div>
+            </div>
+
+            <!-- Prix -->
+            <div class="price-section">
+                <span class="price-large">{{ "%.2f"|format(product.price) }}€</span>
+                <span class="price-unit">/ unité</span>
+            </div>
+
+            <!-- Stock -->
+            <div class="stock-info">
+                {% if product.stock > 10 %}
+                    <span class="stock-icon">✅</span>
+                    <div class="stock-details">
+                        <h3>Disponible</h3>
+                        <p>{{ product.stock }} unités en stock</p>
+                    </div>
+                {% elif product.stock > 0 %}
+                    <span class="stock-icon">⚠️</span>
+                    <div class="stock-details">
+                        <h3>Stock limité</h3>
+                        <p>Plus que {{ product.stock }} unités disponibles</p>
+                    </div>
+                {% else %}
+                    <span class="stock-icon">❌</span>
+                    <div class="stock-details">
+                        <h3>Rupture de stock</h3>
+                        <p>Ce produit n'est plus disponible</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="description-section">
+                <h2>Description</h2>
+                <p class="description-text">{{ product.description }}</p>
+            </div>
+
+            <!-- Formulaire de réservation -->
+            {% if product.stock > 0 %}
+            <div class="reservation-form">
+                <h3>🛒 Réserver ce produit</h3>
+                
+                <div class="quantity-selector">
+                    <label for="quantity">Quantité :</label>
+                    <div class="quantity-input">
+                        <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                        <input type="number" id="quantity" class="quantity-value" value="1" min="1" max="{{ product.stock }}" readonly>
+                        <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                    </div>
+                </div>
+
+                <div class="reservation-total">
+                    <span>Total :</span>
+                    <span class="total-price" id="total-price">{{ "%.2f"|format(product.price) }}€</span>
+                </div>
+
+                <button class="btn btn-reserve-large" onclick="addToCartFromDetail()">
+                    Ajouter au panier
+                </button>
+
+                <p style="margin-top: 1rem; text-align: center; color: var(--text-light);">
+                    <small>💡 Aucun paiement en ligne. Règlement à la récupération.</small>
+                </p>
+            </div>
+            {% else %}
+            <div class="reservation-form">
+                <h3>❌ Produit indisponible</h3>
+                <p>Ce produit est actuellement en rupture de stock. Revenez bientôt !</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Informations supplémentaires -->
+    <div class="additional-info">
+        <div class="info-card">
+            <i>🚚</i>
+            <h3>Livraison locale</h3>
+            <p>Récupération à Paris ou livraison groupée</p>
+        </div>
+        <div class="info-card">
+            <i>🌱</i>
+            <h3>100% Local</h3>
+            <p>Directement du producteur à votre table</p>
+        </div>
+        <div class="info-card">
+            <i>💰</i>
+            <h3>Paiement flexible</h3>
+            <p>Payez à la récupération, en espèces ou CB</p>
+        </div>
+        <div class="info-card">
+            <i>📞</i>
+            <h3>Support</h3>
+            <p>Une question ? Contactez-nous !</p>
+        </div>
+    </div>
+</div>
+
+<!-- Section admin -->
+{% if admin_privilege %}
+<div class="admin-section" style="margin-top: 3rem; padding: 2rem; background-color: #f8f9fa; border-radius: var(--border-radius);">
+    <h3>🔧 Actions administrateur</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <button onclick="editField('{{ product.id }}', 'name', '{{ product.name }}')" class="btn btn-secondary">
+            Modifier le nom
+        </button>
+        <button onclick="editField('{{ product.id }}', 'description', '{{ product.description }}')" class="btn btn-secondary">
+            Modifier la description
+        </button>
+        <button onclick="editField('{{ product.id }}', 'price', '{{ product.price }}')" class="btn btn-secondary">
+            Modifier le prix
+        </button>
+        <button onclick="editField('{{ product.id }}', 'stock', '{{ product.stock }}')" class="btn btn-secondary">
+            Modifier le stock
+        </button>
+    </div>
+    <form method="POST" action="{{ url_for('main.delete_product', product_id=product.id) }}" 
+          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');" 
+          style="margin-top: 2rem;">
+        <button type="submit" class="btn btn-danger">
+            🗑️ Supprimer ce produit
+        </button>
+    </form>
+</div>
+{% endif %}
+
+<script>
+// Gestion de la quantité
+const productPrice = {{ product.price }};
+const maxStock = {{ product.stock }};
+
+function updateTotal() {
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const total = (quantity * productPrice).toFixed(2);
+    document.getElementById('total-price').textContent = total + '€';
+}
+
+function increaseQuantity() {
+    const input = document.getElementById('quantity');
+    const currentValue = parseInt(input.value);
+    if (currentValue < maxStock) {
+        input.value = currentValue + 1;
+        updateTotal();
+    }
+}
+
+function decreaseQuantity() {
+    const input = document.getElementById('quantity');
+    const currentValue = parseInt(input.value);
+    if (currentValue > 1) {
+        input.value = currentValue - 1;
+        updateTotal();
+    }
+}
+
+function confirmReservation() {
+    const quantity = document.getElementById('quantity').value;
+    const total = document.getElementById('total-price').textContent;
+    
+    if (confirm(`Confirmer la réservation de ${quantity} x {{ product.name }} pour ${total} ?`)) {
+        // Simuler une réservation réussie
+        alert('✅ Réservation confirmée ! Vous recevrez un email de confirmation avec les détails de récupération.');
+        // Ici, on pourrait faire un appel AJAX pour enregistrer la réservation
+        // window.location.href = '/reservations';
+    }
+}
+
+// Fonction pour ajouter au panier depuis la page détail
+function addToCartFromDetail() {
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const productData = {
+        id: '{{ product.id }}',
+        name: '{{ product.name }}',
+        price: {{ product.price }},
+        image: '{{ url_for('static', filename=product.image_path if product.image_path else 'img/default.png') }}',
+        stock: {{ product.stock }}
+    };
+    
+    // Ajouter plusieurs fois si quantité > 1
+    for (let i = 0; i < quantity; i++) {
+        addToCart(productData.id, productData.name, productData.price, productData.image, productData.stock);
+    }
+    
+    // Animation du bouton
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '✓ Ajouté au panier !';
+    button.style.backgroundColor = 'var(--secondary-color)';
+    
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.style.backgroundColor = '';
+    }, 2000);
+}
 
 {% if admin_privilege %}
-<form method="POST" action="{{ url_for('main.delete_product', product_id=product.id) }}" onsubmit="return confirm('Es-tu sûr de vouloir supprimer ce produit ?');">
-    <button type="submit" class="delete-button">
-        Supprimer ce produit
-    </button>
-</form>
-<script>
-    function editField(productId, fieldName, currentValue) {
-        const newValue = prompt(`Modifier le champ "${fieldName}" (actuel: ${currentValue}):`, currentValue);
-        if (newValue !== null && newValue !== currentValue) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/update_product_field/${productId}`;
+function editField(productId, fieldName, currentValue) {
+    const fieldLabels = {
+        'name': 'Nom du produit',
+        'description': 'Description',
+        'price': 'Prix (€)',
+        'stock': 'Stock disponible',
+        'is_active': 'Actif (true/false)'
+    };
+    
+    const newValue = prompt(`Modifier : ${fieldLabels[fieldName] || fieldName}\nValeur actuelle : ${currentValue}`, currentValue);
+    
+    if (newValue !== null && newValue !== currentValue) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/update_product_field/${productId}`;
 
-            const fieldInput = document.createElement('input');
-            fieldInput.type = 'hidden';
-            fieldInput.name = 'field_name';
-            fieldInput.value = fieldName;
-            form.appendChild(fieldInput);
+        const fieldInput = document.createElement('input');
+        fieldInput.type = 'hidden';
+        fieldInput.name = 'field_name';
+        fieldInput.value = fieldName;
+        form.appendChild(fieldInput);
 
-            const valueInput = document.createElement('input');
-            valueInput.type = 'hidden';
-            valueInput.name = 'new_value';
-            valueInput.value = newValue;
-            form.appendChild(valueInput);
+        const valueInput = document.createElement('input');
+        valueInput.type = 'hidden';
+        valueInput.name = 'new_value';
+        valueInput.value = newValue;
+        form.appendChild(valueInput);
 
-            document.body.appendChild(form);
-            form.submit();
-        }
+        document.body.appendChild(form);
+        form.submit();
     }
-</script>
+}
 {% endif %}
+</script>
 
 {% endblock %}
