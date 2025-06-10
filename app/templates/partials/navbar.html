@@ -57,7 +57,9 @@
             <li>
                 <a href="{{ url_for('main.cart') }}" class="cart-link {% if request.endpoint == 'main.cart' %}active{% endif %}">
                     <span>Panier</span>
-                    <span class="cart-badge" id="cart-badge" style="display: none;">0</span>
+                    <span class="cart-badge" id="cart-badge" {% if g.cart_item_count == 0 %}style="display: none;"{% endif %}>
+                        {{ g.cart_item_count if g.cart_item_count <= 99 else '99+' }}
+                    </span>
                 </a>
             </li>
             

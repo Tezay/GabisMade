@@ -102,9 +102,12 @@
                             <span class="product-unit">/unité</span>
                         </div>
                         {% if product.stock > 0 %}
-                            <button class="btn-quick-add" onclick="quickAddToCart(event, '{{ product.id }}', '{{ product.name }}', {{ product.price }}, '{{ url_for('static', filename=product.image_path if product.image_path else 'img/default.png') }}', {{ product.stock }})">
-                                Réserver
-                            </button>
+                            <form action="{{ url_for('main.add_to_cart_route', product_id=product.id) }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn-quick-add">
+                                    Réserver
+                                </button>
+                            </form>
                         {% else %}
                             <button class="btn-quick-add" disabled style="opacity: 0.5; cursor: not-allowed;">
                                 Indisponible
@@ -138,77 +141,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, index * 100);
     });
 });
-
-// Fonction d'ajout rapide au panier
-function quickAddToCart(event, productId, productName, productPrice, productImage, productStock) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    // Ajouter au panier
-    addToCart(productId, productName, productPrice, productImage, productStock);
-    
-    // Animation du bouton
-    const button = event.target;
-    const originalText = button.innerHTML;
-    button.innerHTML = '✓ Ajouté';
-    button.style.backgroundColor = 'var(--secondary-color)';
-    
-    // Réinitialiser le bouton après 2 secondes
-    setTimeout(() => {
-        button.innerHTML = originalText;
-        button.style.backgroundColor = '';
-    }, 2000);
-}
-
-// Fonction de notification
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: var(--primary-color);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        animation: slideIn 0.3s ease-out;
-    `;
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease-in';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// Animation pour les notifications
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
 
 // Gestion des filtres (à implémenter avec backend)
 document.querySelectorAll('.filter-select').forEach(select => {

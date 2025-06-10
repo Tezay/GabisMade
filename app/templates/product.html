@@ -95,9 +95,12 @@
                     <span class="total-price" id="total-price">{{ "%.2f"|format(product.price) }}€</span>
                 </div>
 
-                <button class="btn btn-reserve-large" onclick="addToCartFromDetail()">
-                    Ajouter au panier
-                </button>
+                <form action="{{ url_for('main.add_to_cart_route', product_id=product.id) }}" method="POST">
+                    <input type="hidden" name="quantity" id="form-quantity" value="1">
+                    <button type="submit" class="btn btn-reserve-large">
+                        Ajouter au panier
+                    </button>
+                </form>
 
                 <p style="margin-top: 1rem; text-align: center; color: var(--text-light);">
                     <small>💡 Aucun paiement en ligne. Règlement à la récupération.</small>
@@ -165,6 +168,7 @@
 </div>
 {% endif %}
 
+
 <script>
 // Gestion de la quantité
 const productPrice = {{ product.price }};
@@ -174,6 +178,8 @@ function updateTotal() {
     const quantity = parseInt(document.getElementById('quantity').value);
     const total = (quantity * productPrice).toFixed(2);
     document.getElementById('total-price').textContent = total + '€';
+    // Mettre à jour la quantité pour le formulaire
+    document.getElementById('form-quantity').value = quantity;
 }
 
 function increaseQuantity() {
@@ -194,45 +200,12 @@ function decreaseQuantity() {
     }
 }
 
-function confirmReservation() {
-    const quantity = document.getElementById('quantity').value;
-    const total = document.getElementById('total-price').textContent;
-    
-    if (confirm(`Confirmer la réservation de ${quantity} x {{ product.name }} pour ${total} ?`)) {
-        // Simuler une réservation réussie
-        alert('✅ Réservation confirmée ! Vous recevrez un email de confirmation avec les détails de récupération.');
-        // Ici, on pourrait faire un appel AJAX pour enregistrer la réservation
-        // window.location.href = '/reservations';
+// Initialiser la quantité du formulaire au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('quantity')) {
+        updateTotal(); // Assure que form-quantity est initialisé
     }
-}
-
-// Fonction pour ajouter au panier depuis la page détail
-function addToCartFromDetail() {
-    const quantity = parseInt(document.getElementById('quantity').value);
-    const productData = {
-        id: '{{ product.id }}',
-        name: '{{ product.name }}',
-        price: {{ product.price }},
-        image: '{{ url_for('static', filename=product.image_path if product.image_path else 'img/default.png') }}',
-        stock: {{ product.stock }}
-    };
-    
-    // Ajouter plusieurs fois si quantité > 1
-    for (let i = 0; i < quantity; i++) {
-        addToCart(productData.id, productData.name, productData.price, productData.image, productData.stock);
-    }
-    
-    // Animation du bouton
-    const button = event.target;
-    const originalText = button.innerHTML;
-    button.innerHTML = '✓ Ajouté au panier !';
-    button.style.backgroundColor = 'var(--secondary-color)';
-    
-    setTimeout(() => {
-        button.innerHTML = originalText;
-        button.style.backgroundColor = '';
-    }, 2000);
-}
+});
 
 {% if admin_privilege %}
 function editField(productId, fieldName, currentValue) {

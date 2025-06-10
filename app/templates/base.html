@@ -10,7 +10,6 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- 
     {% include 'partials/navbar.html' %}
     <main>
         {% block content %}
@@ -18,117 +17,5 @@
         {% endblock %}
     </main>
     {% include 'partials/footer.html' %}
-     -->
-        <!-- Script global du panier -->
-    <script>
-    // Fonction pour mettre à jour le badge du panier
-    function updateCartBadge() {
-        const cart = JSON.parse(localStorage.getItem('gabismade_cart') || '[]');
-        const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
-        const badge = document.getElementById('cart-badge');
-        
-        if (badge) {
-            if (itemCount > 0) {
-                badge.textContent = itemCount > 99 ? '99+' : itemCount;
-                badge.style.display = 'block';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-    }
-
-    // Fonction pour ajouter un produit au panier
-    function addToCart(productId, productName, productPrice, productImage, productStock) {
-        let cart = JSON.parse(localStorage.getItem('gabismade_cart') || '[]');
-        
-        const existingItem = cart.find(item => item.id === productId);
-        
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            cart.push({
-                id: productId,
-                name: productName,
-                price: productPrice,
-                image: productImage,
-                stock: productStock,
-                quantity: 1
-            });
-        }
-        
-        localStorage.setItem('gabismade_cart', JSON.stringify(cart));
-        updateCartBadge();
-        
-        // Notification
-        showCartNotification(`${productName} ajouté au panier !`);
-    }
-
-    // Fonction de notification pour le panier
-    function showCartNotification(message) {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #2d6e3e;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            animation: slideInCart 0.3s ease-out;
-        `;
-        notification.innerHTML = `
-            <span style="font-size: 1.5rem;">✅</span>
-            <div>
-                <div style="font-weight: 600;">${message}</div>
-                <a href="{{ url_for('main.cart') }}" style="color: #8bc34a; font-size: 0.9rem; margin-top: 0.25rem; display: inline-block;">
-                    Voir le panier →
-                </a>
-            </div>
-        `;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'slideOutCart 0.3s ease-in';
-            setTimeout(() => notification.remove(), 300);
-        }, 4000);
-    }
-
-    // Styles pour les animations
-    if (!document.getElementById('cart-animations')) {
-        const style = document.createElement('style');
-        style.id = 'cart-animations';
-        style.textContent = `
-            @keyframes slideInCart {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            @keyframes slideOutCart {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    // Mettre à jour le badge au chargement de la page
-    document.addEventListener('DOMContentLoaded', updateCartBadge);
-    </script>
 </body>
 </html>

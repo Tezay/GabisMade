@@ -286,7 +286,7 @@
 
 @media (max-width: 600px) {
     .cart-item {
-        grid-template-columns: 80px 1fr;
+        grid-template-columns: 80px 1fr; /* Ajusté pour une meilleure mise en page */
         gap: 1rem;
         padding: 1rem;
     }
@@ -295,12 +295,19 @@
         width: 80px;
         height: 80px;
     }
+
+    .cart-item-details { /* Assurer que les détails prennent toute la largeur disponible */
+        grid-column: 2 / -1;
+    }
     
     .cart-item-right {
-        grid-column: 1 / -1;
-        flex-direction: row;
-        justify-content: space-between;
+        grid-column: 1 / -1; /* S'étend sur toute la largeur */
+        flex-direction: row; /* Aligner prix et bouton supprimer horizontalement */
+        justify-content: space-between; /* Espacer prix et bouton */
+        align-items: center; /* Centrer verticalement */
         margin-top: 1rem;
+        padding-top: 1rem; /* Ajouter un peu d'espace au-dessus */
+        border-top: 1px solid #eee; /* Séparateur visuel */
     }
     
     .cart-header h1 {
@@ -320,121 +327,43 @@
     <div class="cart-content">
         <!-- Section des produits -->
         <div class="cart-items" id="cart-items">
-            <!-- Le contenu sera généré dynamiquement par JavaScript -->
-        </div>
-
-        <!-- Résumé de la commande -->
-        <div class="cart-summary">
-            <h2 class="summary-title">Résumé de la commande</h2>
-            
-            <div class="summary-row">
-                <span>Sous-total</span>
-                <span id="subtotal">0.00€</span>
-            </div>
-            
-            <div class="summary-row">
-                <span>Nombre d'articles</span>
-                <span id="item-count">0</span>
-            </div>
-            
-            <div class="summary-total">
-                <span>Total</span>
-                <span class="total-price" id="total">0.00€</span>
-            </div>
-            
-            <div class="delivery-info">
-                <i>📍</i> Récupération gratuite à Paris<br>
-                Samedi 10h-14h ou Dimanche 10h-13h
-            </div>
-            
-            <button class="btn-checkout" id="btn-checkout" onclick="proceedToCheckout()">
-                Confirmer la réservation
-            </button>
-            
-            <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-light);">
-                💳 Paiement sur place uniquement
-            </p>
-        </div>
-    </div>
-</div>
-
-<script>
-// Système de gestion du panier
-class CartManager {
-    constructor() {
-        this.cart = this.loadCart();
-        this.render();
-    }
-
-    // Charger le panier depuis localStorage
-    loadCart() {
-        const savedCart = localStorage.getItem('gabismade_cart');
-        return savedCart ? JSON.parse(savedCart) : [];
-    }
-
-    // Sauvegarder le panier
-    saveCart() {
-        localStorage.setItem('gabismade_cart', JSON.stringify(this.cart));
-        this.updateCartBadge();
-    }
-
-    // Ajouter un produit
-    addItem(product) {
-        const existingItem = this.cart.find(item => item.id === product.id);
-        
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            this.cart.push({
-                ...product,
-                quantity: 1
-            });
-        }
-        
-        this.saveCart();
-        this.render();
-    }
-
-    // Mettre à jour la quantité
-    updateQuantity(productId, quantity) {
-        const item = this.cart.find(item => item.id === productId);
-        if (item) {
-            item.quantity = Math.max(1, Math.min(quantity, item.stock || 99));
-            this.saveCart();
-            this.render();
-        }
-    }
-
-    // Supprimer un produit
-    removeItem(productId) {
-        this.cart = this.cart.filter(item => item.id !== productId);
-        this.saveCart();
-        this.render();
-    }
-
-    // Calculer le total
-    getTotal() {
-        return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    }
-
-    // Obtenir le nombre total d'articles
-    getItemCount() {
-        return this.cart.reduce((count, item) => count + item.quantity, 0);
-    }
-
-    // Mettre à jour le badge du panier dans la navbar
-    updateCartBadge() {
-        const count = this.getItemCount();
-        // Ici vous pourriez mettre à jour un badge dans la navbar
-        console.log('Articles dans le panier:', count);
-    }
-
-    // Afficher le panier
-    render() {
-        const container = document.getElementById('cart-items');
-        
-        if (this.cart.length === 0) {
-            container.innerHTML = `
+            {% if cart_items %}
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <img src="{{ url_for('static', filename=item.product.image_path if item.product.image_path else 'img/default.png') }}" 
+                         alt="{{ item.product.name }}" 
+                         class="cart-item-image">
+                    
+                    <div class="cart-item-details">
+                        <h3 class="cart-item-name">{{ item.product.name }}</h3>
+                        <p class="cart-item-producer">Ferme Martin</p> <!-- Placeholder, à dynamiser si besoin -->
+                        
+                        <form action="{{ url_for('main.update_cart_item_route', cart_item_id=item.id) }}" method="POST" class="quantity-controls">
+                            <button type="button" class="quantity-btn" onclick="this.nextElementSibling.stepDown(); this.form.requestSubmit();">-</button>
+                            <input type="number" 
+                                   name="quantity"
+                                   class="quantity-input" 
+                                   value="{{ item.quantity }}" 
+                                   min="1" 
+                                   max="{{ item.product.stock }}"
+                                   onchange="this.form.requestSubmit();">
+                            <button type="button" class="quantity-btn" onclick="this.previousElementSibling.stepUp(); this.form.requestSubmit();">+</button>
+                        </form>
+                    </div>
+                    
+                    <div class="cart-item-right">
+                        <div class="cart-item-price">
+                            {{ "%.2f"|format(item.product.price * item.quantity) }}€
+                        </div>
+                        <form action="{{ url_for('main.remove_from_cart_route', cart_item_id=item.id) }}" method="POST">
+                            <button type="submit" class="btn-remove">
+                                Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
                 <div class="cart-empty">
                     <div style="font-size: 5rem; margin-bottom: 1rem;">🛒</div>
                     <h2>Votre panier est vide</h2>
@@ -443,98 +372,44 @@ class CartManager {
                         Continuer mes achats
                     </a>
                 </div>
-            `;
-            document.getElementById('btn-checkout').disabled = true;
-        } else {
-            container.innerHTML = this.cart.map(item => `
-                <div class="cart-item">
-                    <img src="${item.image || '/static/img/default.png'}" 
-                         alt="${item.name}" 
-                         class="cart-item-image">
-                    
-                    <div class="cart-item-details">
-                        <h3 class="cart-item-name">${item.name}</h3>
-                        <p class="cart-item-producer">Ferme Martin</p>
-                        
-                        <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="cartManager.updateQuantity('${item.id}', ${item.quantity - 1})">
-                                -
-                            </button>
-                            <input type="number" 
-                                   class="quantity-input" 
-                                   value="${item.quantity}" 
-                                   min="1" 
-                                   max="${item.stock || 99}"
-                                   onchange="cartManager.updateQuantity('${item.id}', parseInt(this.value))">
-                            <button class="quantity-btn" onclick="cartManager.updateQuantity('${item.id}', ${item.quantity + 1})">
-                                +
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="cart-item-right">
-                        <div class="cart-item-price">
-                            ${(item.price * item.quantity).toFixed(2)}€
-                        </div>
-                        <button class="btn-remove" onclick="cartManager.removeItem('${item.id}')">
-                            Supprimer
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+            {% endif %}
+        </div>
+
+        <!-- Résumé de la commande -->
+        <div class="cart-summary">
+            <h2 class="summary-title">Résumé de la commande</h2>
             
-            document.getElementById('btn-checkout').disabled = false;
-        }
-        
-        // Mettre à jour le résumé
-        document.getElementById('subtotal').textContent = this.getTotal().toFixed(2) + '€';
-        document.getElementById('total').textContent = this.getTotal().toFixed(2) + '€';
-        document.getElementById('item-count').textContent = this.getItemCount();
-    }
-}
+            <div class="summary-row">
+                <span>Sous-total</span>
+                <span id="subtotal">{{ "%.2f"|format(total_price) }}€</span>
+            </div>
+            
+            <div class="summary-row">
+                <span>Nombre d'articles</span>
+                <span id="item-count">{{ item_count }}</span>
+            </div>
+            
+            <div class="summary-total">
+                <span>Total</span>
+                <span class="total-price" id="total">{{ "%.2f"|format(total_price) }}€</span>
+            </div>
+            
+            <div class="delivery-info">
+                <i>📍</i> Récupération gratuite à Paris<br>
+                Samedi 10h-14h ou Dimanche 10h-13h
+            </div>
+            
+            <form action="{{ url_for('main.checkout_route') }}" method="POST">
+                <button type="submit" class="btn-checkout" id="btn-checkout" {% if not cart_items %}disabled{% endif %}>
+                    Confirmer la réservation
+                </button>
+            </form>
+            
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-light);">
+                💳 Paiement sur place uniquement
+            </p>
+        </div>
+    </div>
+</div>
 
-// Initialiser le gestionnaire de panier
-const cartManager = new CartManager();
-
-// Fonction pour procéder à la réservation
-function proceedToCheckout() {
-    if (cartManager.cart.length > 0) {
-        // Ici vous pourriez rediriger vers une page de confirmation
-        alert('🎉 Réservation confirmée ! Vous recevrez un email avec les détails de récupération.');
-        // cartManager.cart = [];
-        // cartManager.saveCart();
-        // cartManager.render();
-    }
-}
-
-// Fonction pour ajouter un produit (à appeler depuis d'autres pages)
-function addToCart(product) {
-    cartManager.addItem(product);
-    showNotification(`${product.name} ajouté au panier !`);
-}
-
-// Notification
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: var(--primary-color);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        animation: slideIn 0.3s ease-out;
-    `;
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease-in';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-</script>
 {% endblock %}
