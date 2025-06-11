@@ -1,50 +1,7 @@
 <nav class="navbar" id="navbar">
     <div class="logo-container">
         <a href="{{ url_for('main.home') }}" class="logo">
-            <svg width="50" height="50" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <!-- Panier tressé style artisanal -->
-                <g transform="translate(50, 50)">
-                    <!-- Anse du panier -->
-                    <path d="M-20 -5 Q0 -20 20 -5" 
-                          fill="none" 
-                          stroke="#8b6f47" 
-                          stroke-width="3"
-                          stroke-linecap="round"/>
-                    
-                    <!-- Corps du panier avec effet tressé -->
-                    <path d="M-22 -5 L-18 20 L18 20 L22 -5 Z" 
-                          fill="#a0826d" 
-                          stroke="#8b6f47" 
-                          stroke-width="2"/>
-                    
-                    <!-- Motif tressé horizontal -->
-                    <path d="M-20 0 L20 0 M-19 5 L19 5 M-18 10 L18 10 M-17 15 L17 15" 
-                          stroke="#8b6f47" 
-                          stroke-width="1" 
-                          opacity="0.4"/>
-                    
-                    <!-- Motif tressé vertical -->
-                    <path d="M-15 -5 L-13 20 M-8 -5 L-7 20 M-1 -5 L0 20 M6 -5 L7 20 M13 -5 L15 20" 
-                          stroke="#8b6f47" 
-                          stroke-width="1" 
-                          opacity="0.3"/>
-                    
-                    <!-- Produits dans le panier -->
-                    <!-- Pain -->
-                    <ellipse cx="-8" cy="-8" rx="6" ry="4" fill="#d4a574" transform="rotate(-20)"/>
-                    <!-- Légumes -->
-                    <circle cx="5" cy="-10" r="5" fill="#ff6b35"/> <!-- Tomate -->
-                    <circle cx="0" cy="-12" r="4" fill="#ffd700"/> <!-- Citron -->
-                    <ellipse cx="-5" cy="-11" rx="3" ry="5" fill="#8bc34a" transform="rotate(15)"/> <!-- Concombre -->
-                    <!-- Petites feuilles -->
-                    <path d="M3 -15 Q5 -17 7 -15" fill="#228b22"/>
-                    <path d="M-7 -13 Q-5 -15 -3 -13" fill="#228b22"/>
-                </g>
-            </svg>
-            <div class="logo-text">
-                <span class="logo-main">Gabi's Made</span>
-                <span class="logo-tagline">Fait maison</span>
-            </div>
+            <img src="{{ url_for('static', filename='assets/gabisMade.png') }}" alt="GabisMade Logo" height="50">
         </a>
     </div>
     
