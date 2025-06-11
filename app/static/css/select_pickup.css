@@ -1,0 +1,143 @@
+.pickup-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+.pickup-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+}
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.calendar-nav a {
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.calendar-nav a:hover {
+    background-color: var(--secondary-color);
+}
+.calendar-nav h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--text-dark);
+}
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+.calendar th, .calendar td {
+    border: 1px solid #ddd;
+    padding: 0.8rem;
+    text-align: center;
+    vertical-align: top;
+}
+.calendar th {
+    background-color: #f8f9fa;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+.calendar td {
+    height: 100px;
+}
+.calendar .day-number {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+.calendar .other-month .day-number {
+    color: #ccc;
+}
+.calendar .today .day-number {
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    margin: 0 auto 0.3rem auto;
+    display: inline-block;
+}
+.calendar .past-day {
+    background-color: #f0f0f0;
+    color: #aaa;
+}
+.calendar .has-slots {
+    background-color: #e6ffed;
+    cursor: pointer;
+}
+.calendar .has-slots:hover {
+    background-color: #90D1CA;
+}
+.slots-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9em;
+}
+.slots-list li {
+    margin-bottom: 0.3rem;
+}
+.slots-list label {
+    display: block;
+    padding: 0.4rem;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.slots-list input[type="radio"] {
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+.slots-list label:hover {
+    background-color: #f0f0f0;
+}
+.slots-list input[type="radio"]:checked + span {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+.no-slots {
+    color: #aaa;
+    font-style: italic;
+    font-size: 0.9em;
+}
+.submit-section {
+    text-align: center;
+    margin-top: 2rem;
+}
+.btn-confirm-slot {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+.btn-confirm-slot:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+#selected_slot_details {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--primary-color);
+}

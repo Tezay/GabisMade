@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Choix du Créneau de Retrait - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/select_pickup.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="pickup-container">
+    <h1 class="pickup-header">Choisissez votre créneau de retrait pour votre commande</h1>
+
+    <div class="calendar-nav">
+        <a href="{{ url_for('main.select_pickup_slot_route', order_number=order.order_number) }}{{ calendar_data.prev_month_params|safe }}">&laquo; Mois Précédent</a>
+        <h2>{{ calendar_data.month_name }} {{ calendar_data.year }}</h2>
+        <a href="{{ url_for('main.select_pickup_slot_route', order_number=order.order_number) }}{{ calendar_data.next_month_params|safe }}">Mois Suivant &raquo;</a>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.select_pickup_slot_route', order_number=order.order_number) }}" id="pickupForm">
+        <table class="calendar">
+            <thead>
+                <tr>
+                    <th>Lun</th><th>Mar</th><th>Mer</th><th>Jeu</th><th>Ven</th><th>Sam</th><th>Dim</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in calendar_data.weeks %}
+                <tr>
+                    {% for day_info in week %}
+                    <td class="{% if not day_info.is_current_month %}other-month{% endif %}
+                               {% if day_info.is_today %}today{% endif %}
+                               {% if day_info.has_slots %}has-slots{% endif %}
+                               {% if day_info.is_past %}past-day{% endif %}"
+                        data-date="{{ day_info.date_obj.strftime('%Y-%m-%d') if day_info.is_current_month else '' }}">
+                        
+                        <span class="day-number">{{ day_info.day }}</span>
+                        
+                        {% if day_info.is_current_month and not day_info.is_past %}
+                            {% if day_info.has_slots %}
+                                <ul class="slots-list">
+                                {% for slot in day_info.slots_for_day %}
+                                    <li>
+                                        <label>
+                                            <input type="radio" name="pickup_slot_id" value="{{ slot.id }}" required 
+                                                   onchange="updateSelectedSlotDetails('{{ day_info.date_obj.strftime('%d/%m/%Y') }}', '{{ slot.time }}', '{{ slot.location }}')">
+                                            <span>{{ slot.time }} - {{ slot.location }}</span>
+                                        </label>
+                                    </li>
+                                {% endfor %}
+                                </ul>
+                            {% elif not day_info.has_slots and day_info.date_obj.weekday() < 5 %} <!-- Weekday but no slots -->
+                                <span class="no-slots">Aucun créneau</span>
+                            {% endif %}
+                        {% elif day_info.is_past %}
+                             <span class="no-slots">Passé</span>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div id="selected_slot_details_container" style="display:none;">
+            <strong>Créneau sélectionné :</strong> <span id="selected_slot_details"></span>
+        </div>
+
+        <div class="submit-section">
+            <button type="submit" class="btn-confirm-slot" id="confirmSlotButton" disabled>Confirmer ce créneau</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateSelectedSlotDetails(date, time, location) {
+        const detailsContainer = document.getElementById('selected_slot_details_container');
+        const detailsSpan = document.getElementById('selected_slot_details');
+        const confirmButton = document.getElementById('confirmSlotButton');
+
+        if (date && time && location) {
+            detailsSpan.textContent = `Le ${date} à ${time} (${location})`;
+            detailsContainer.style.display = 'block';
+            confirmButton.disabled = false;
+        } else {
+            detailsContainer.style.display = 'none';
+            confirmButton.disabled = true;
+        }
+    }
+    
+    // Vérification initiale si un radio button est déjà sélectionné
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkedRadio = document.querySelector('input[name="pickup_slot_id"]:checked');
+        if (checkedRadio) {
+            document.getElementById('confirmSlotButton').disabled = false;
+        }
+    });
+</script>
+{% endblock %}

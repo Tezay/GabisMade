@@ -1,5 +1,8 @@
-from .models import Product, User, CartItem
+from .models import Product, User, CartItem, Order, OrderItem, PickupSlot
 from . import db
+from datetime import datetime, timedelta, time
+import pytz # For timezone
+import uuid # For order number generation
 
 ################## Fonctions utiles pour la gestion des produits ##################
 
@@ -207,3 +210,196 @@ def clear_cart(user_id):
     except Exception as e:
         db.session.rollback()
         return False, f"Erreur lors du vidage du panier: {str(e)}"
+
+
+################## Fonctions utiles pour la gestion des créneaux de retrait ##################
+
+def get_available_pickup_slots_for_month_year(year, month):
+    """Récupère les créneaux de retrait disponibles pour un mois et une année donnés."""
+    # Calcule le premier et le dernier jour du mois
+    first_day_of_month = datetime(year, month, 1)
+    if month == 12:
+        last_day_of_month = datetime(year + 1, 1, 1) - timedelta(days=1)
+    else:
+        last_day_of_month = datetime(year, month + 1, 1) - timedelta(days=1)
+    
+    # Ajuster pour inclure toute la journée du dernier jour
+    last_day_of_month = datetime.combine(last_day_of_month, time(23, 59, 59))
+
+    # Paris timezone
+    paris_tz = pytz.timezone('Europe/Paris')
+    first_day_of_month = paris_tz.localize(first_day_of_month)
+    last_day_of_month = paris_tz.localize(last_day_of_month)
+
+    # Récupère les créneaux disponibles et futurs
+    now_paris = datetime.now(paris_tz)
+    return PickupSlot.query.filter(
+        PickupSlot.slot_datetime >= first_day_of_month,
+        PickupSlot.slot_datetime <= last_day_of_month,
+        PickupSlot.slot_datetime > now_paris, # Uniquement les créneaux futurs
+        PickupSlot.is_available == True
+    ).order_by(PickupSlot.slot_datetime).all()
+
+def get_pickup_slot_by_id(slot_id):
+    """Récupère un créneau de retrait par son ID."""
+    return PickupSlot.query.get(slot_id)
+
+def book_pickup_slot(slot_id):
+    """
+    Vérifie si un créneau de retrait est valide et disponible pour la réservation.
+    Ne modifie plus l'état du créneau, car plusieurs commandes peuvent utiliser le même créneau.
+    L'indicateur 'is_available' sur le modèle PickupSlot peut être utilisé par un admin pour désactiver manuellement un créneau.
+    """
+    slot = get_pickup_slot_by_id(slot_id)
+    if slot and slot.is_available:
+        return True # Le créneau existe et est marqué comme disponible
+    return False # Le créneau n'existe pas ou a été manuellement désactivé
+
+
+################## Fonctions utiles pour la gestion des commandes ##################
+
+def generate_order_number():
+    """Génère un numéro de commande unique."""
+    # Génère un numéro de commande basé sur l'heure actuelle et un UUID
+    return f"CMD-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:4].upper()}"
+
+def create_order_from_cart(user_id):
+    """Crée une commande à partir du panier de l'utilisateur."""
+    user = User.query.get(user_id)
+    if not user:
+        return None, "Utilisateur non trouvé."
+
+    cart_items = get_cart_items(user_id)
+    if not cart_items:
+        return None, "Votre panier est vide."
+
+    total_price, _ = get_cart_total_and_item_count(user_id)
+    
+    new_order = Order(
+        order_number=generate_order_number(),
+        user_id=user_id,
+        total_price=total_price,
+        status="pending_pickup_selection" # Statut initial
+    )
+    db.session.add(new_order)
+    
+    # Ajoute les articles du panier à la commande
+    for item in cart_items:
+        if item.product: # S'assure que le produit existe
+            order_item = OrderItem(
+                order_id=new_order.id, # Sera défini après commit de new_order
+                product_id=item.product.id,
+                quantity=item.quantity,
+                price_at_purchase=item.product.price # Prix au moment de la commande
+            )
+            new_order.items.append(order_item) # Ajoute à la relation
+        else:
+            # Gérer cas où un produit du panier n'existe plus
+            db.session.rollback()
+            return None, f"Produit {item.product_id} non trouvé lors de la création de la commande."
+
+    try:
+        db.session.flush() # Pour obtenir l'ID de new_order pour les OrderItems si nécessaire avant commit complet
+
+        # Vider le panier après la création de la commande
+        clear_cart(user_id)
+        
+        db.session.commit()
+        return new_order, "Commande créée avec succès. Veuillez sélectionner un créneau de retrait."
+    except Exception as e:
+        db.session.rollback()
+        return None, f"Erreur lors de la création de la commande: {str(e)}"
+
+def get_order_by_number_for_user(order_number, user_id):
+    """Récupère une commande par son numéro, en vérifiant qu'elle appartient à l'utilisateur."""
+    order = Order.query.filter_by(order_number=order_number, user_id=user_id).first()
+    if not order: # Vérif si utilisateur est admin
+        user = User.query.get(user_id)
+        if user and user.privilege_level == 'admin':
+            order = Order.query.filter_by(order_number=order_number).first()
+    return order
+
+
+def confirm_order_pickup(order_number, pickup_slot_id, user_id):
+    """Confirme le créneau de retrait pour une commande."""
+    # Recherche la commande par son numéro et l'ID de l'utilisateur pour s'assurer que l'utilisateur a accès à cette commande
+    order = get_order_by_number_for_user(order_number, user_id) 
+    slot = PickupSlot.query.get(pickup_slot_id)
+
+    if not order:
+        return False, "Commande non trouvée ou accès non autorisé."
+    if not slot:
+        return False, "Créneau de retrait non trouvé."
+    
+    # Vérifie si le créneau est manuellement marqué comme indisponible par un admin.
+    if not slot.is_available:
+        return False, "Ce créneau de retrait n'est plus disponible."
+
+    if not book_pickup_slot(pickup_slot_id): 
+        return False, "Impossible de sélectionner ce créneau de retrait (il peut être invalide ou désactivé)."
+        
+    order.pickup_slot_id = pickup_slot_id
+    order.status = "confirmed" # Met à jour le statut de la commande
+            
+    try:
+        db.session.commit() # Sauvegarde les modifications de la commande
+        return True, "Créneau de retrait confirmé pour votre commande."
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Erreur lors de la confirmation du créneau: {str(e)}"
+
+def get_orders_for_user(user_id):
+    """Récupère toutes les commandes pour un utilisateur donné, triées par date de création (plus récentes en premier).
+       Exclut les commandes complétées."""
+    return Order.query.filter(
+        Order.user_id == user_id,
+        Order.status != "completed"
+    ).order_by(Order.created_at.desc()).all()
+
+def get_all_orders_admin():
+    """Récupère toutes les commandes du système non complétées, triées par date de création. Pour admin."""
+    return Order.query.filter(Order.status != "completed").order_by(Order.created_at.desc()).all()
+
+def get_all_completed_orders_admin():
+    """Récupère toutes les commandes complétées du système, triées par date de création. Pour admin."""
+    return Order.query.filter_by(status="completed").order_by(Order.created_at.desc()).all()
+
+def delete_order(order_number, user_id):
+    """Supprime une commande pour un utilisateur donné."""
+    order = get_order_by_number_for_user(order_number, user_id)
+
+    if not order:
+        return False, "Commande non trouvée ou accès non autorisé."
+
+    # Commandes complétées ne peuvent pas être supprimées
+    deletable_statuses = ["pending_pickup_selection", "confirmed", "cancelled"] 
+
+    if order.status not in deletable_statuses:
+        return False, f"Cette commande ne peut pas être supprimée (statut actuel: {order.status})."
+
+    try:
+        # Suppression de l'objet Order déclenchera suppression en cascade des OrderItems associés grâce à `cascade="all, delete-orphan"`
+        db.session.delete(order)
+        db.session.commit()
+        return True, "Votre commande a été supprimée avec succès."
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Erreur lors de la suppression de la commande: {str(e)}"
+
+def complete_order_admin(order_number):
+    """Marque une commande comme complétée. Action réservée à l'admin."""
+    order = Order.query.filter_by(order_number=order_number).first()
+
+    if not order:
+        return False, "Commande non trouvée."
+
+    if order.status != "confirmed":
+        return False, f"Seules les commandes confirmées peuvent être marquées comme terminées (statut actuel: {order.status})."
+    
+    try:
+        order.status = "completed"
+        db.session.commit()
+        return True, f"La commande {order_number} a été marquée comme terminée."
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Erreur lors de la finalisation de la commande {order_number}: {str(e)}"

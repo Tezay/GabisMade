@@ -26,7 +26,7 @@
                     
                     <div class="cart-item-details">
                         <h3 class="cart-item-name">{{ item.product.name }}</h3>
-                        <p class="cart-item-producer">Ferme Martin</p> <!-- Placeholder, à dynamiser si besoin -->
+                        <p class="cart-item-producer">Ferme Martin (exemple)</p>
                         
                         <form action="{{ url_for('main.update_cart_item_route', cart_item_id=item.id) }}" method="POST" class="quantity-controls">
                             <button type="button" class="quantity-btn" onclick="this.nextElementSibling.stepDown(); this.form.requestSubmit();">-</button>
@@ -85,11 +85,11 @@
             </div>
             
             <div class="delivery-info">
-                <i>📍</i> Récupération gratuite à Paris<br>
-                Samedi 10h-14h ou Dimanche 10h-13h
+                <i>📍</i> Récupération gratuite à l'Efrei<br>
+                Pendant toute la semaine
             </div>
             
-            <form action="{{ url_for('main.checkout_route') }}" method="POST">
+            <form action="{{ url_for('main.checkout_route') }}" method="GET">
                 <button type="submit" class="btn-checkout" id="btn-checkout" {% if not cart_items %}disabled{% endif %}>
                     Confirmer la réservation
                 </button>

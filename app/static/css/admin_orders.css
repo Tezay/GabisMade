@@ -1,0 +1,70 @@
+.admin-orders-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+.admin-orders-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--primary-color);
+}
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.orders-table th, .orders-table td {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+.orders-table th {
+    background-color: #f8f9fa;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+}
+.orders-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+.orders-table td {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+.orders-table .order-number a {
+    color: var(--primary-color);
+    font-weight: 500;
+    text-decoration: none;
+}
+.orders-table .order-number a:hover {
+    text-decoration: underline;
+}
+.order-status-admin {
+    padding: 0.2rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: white;
+    display: inline-block;
+    min-width: 100px;
+    text-align: center;
+}
+.status-confirmed { background-color: var(--success-color); }
+.status-pending_pickup_selection { background-color: var(--warning-color); }
+.status-completed { background-color: var(--info-color); }
+.status-cancelled { background-color: var(--danger-color); }
+
+.no-orders-admin {
+    text-align: center;
+    padding: 3rem;
+    background-color: #fff;
+    border-radius: 10px;
+}
+.no-orders-admin p {
+    font-size: 1.2rem;
+    color: var(--text-light);
+}

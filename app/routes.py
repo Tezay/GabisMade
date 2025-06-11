@@ -4,14 +4,22 @@ from .utils import (
     is_admin, is_name_taken, update_device_id, update_user_field, 
     remove_user, update_product_field_util,
     get_cart_items, add_item_to_cart, update_cart_item_quantity,
-    remove_item_from_cart, get_cart_total_and_item_count, clear_cart
+    remove_item_from_cart, get_cart_total_and_item_count, clear_cart,
+    get_available_pickup_slots_for_month_year,
+    get_pickup_slot_by_id, book_pickup_slot, generate_order_number,
+    create_order_from_cart, get_order_by_number_for_user, confirm_order_pickup,
+    get_orders_for_user, get_all_orders_admin,
+    delete_order,
+    complete_order_admin, get_all_completed_orders_admin
 )
-from .models import Product, User, CartItem
+from .models import Product, User, CartItem, Order, OrderItem, PickupSlot
+from .calendar_utils import generate_calendar_data
 import uuid
-from flask import Blueprint, redirect, url_for, flash
+from flask import Blueprint
 from werkzeug.utils import secure_filename
 import os
 import re
+from datetime import datetime
 
 # Crée un Blueprint pour les routes principales
 bp = Blueprint('main', __name__)
@@ -399,7 +407,175 @@ def remove_from_cart_route(cart_item_id):
     return redirect(url_for('main.cart'))
 
 
-@bp.route('/checkout', methods=['POST'])
+@bp.route('/checkout', methods=['GET'])
 def checkout_route():
-    # A implémenter : Logique de confirmation de commande, avec résumé des articles du panier et numéro de commande
-    return redirect(url_for('main.cart'))
+    """Étape 1: Page de confirmation de la commande."""
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        flash("Veuillez vous connecter pour finaliser votre commande.", "warning")
+        return redirect(url_for('main.login', next=url_for('main.checkout_route')))
+
+    cart_items_db = get_cart_items(user_id)
+    if not cart_items_db:
+        flash("Votre panier est vide. Ajoutez des produits avant de continuer.", "info")
+        return redirect(url_for('main.list_products'))
+        
+    total_price, item_count = get_cart_total_and_item_count(user_id)
+    
+    return render_template('order_confirmation.html', cart_items=cart_items_db, total_price=total_price, item_count=item_count)
+
+@bp.route('/order/create', methods=['POST'])
+def create_order_route():
+    """Étape 2: Crée la commande et redirige vers la sélection du créneau."""
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        flash("Session expirée. Veuillez vous reconnecter.", "warning")
+        return redirect(url_for('main.login'))
+
+    order, message = create_order_from_cart(user_id)
+    if not order:
+        flash(message, "error")
+        return redirect(url_for('main.cart')) # Redirige vers le panier en cas d'erreur
+
+    flash(message, "success")
+    return redirect(url_for('main.select_pickup_slot_route', order_number=order.order_number))
+
+
+@bp.route('/order/<string:order_number>/select_pickup', methods=['GET', 'POST'])
+def select_pickup_slot_route(order_number):
+    """Étape 3: Sélection du créneau de retrait."""
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        flash("Veuillez vous connecter pour sélectionner un créneau.", "warning")
+        return redirect(url_for('main.login'))
+
+    order = get_order_by_number_for_user(order_number, user_id)
+    if not order:
+        flash("Commande non trouvée ou accès non autorisé.", "error")
+        return redirect(url_for('main.home'))
+    
+    if order.status != "pending_pickup_selection":
+        flash("Cette commande a déjà un créneau de retrait sélectionné ou est dans un état invalide.", "info")
+        if order.status == "confirmed":
+             return redirect(url_for('main.order_receipt_route', order_number=order.order_number))
+        return redirect(url_for('main.user_profile', user_id=user_id))
+
+    if request.method == 'POST':
+        selected_slot_id = request.form.get('pickup_slot_id')
+        if not selected_slot_id:
+            flash("Veuillez sélectionner un créneau de retrait.", "error")
+        else:
+            success, message = confirm_order_pickup(order.order_number, int(selected_slot_id), user_id)
+            if success:
+                flash(message, "success")
+                return redirect(url_for('main.order_receipt_route', order_number=order.order_number))
+            else:
+                flash(message, "error")
+        # Si POST échoue, on recharge la page avec les créneaux (ci-dessous)
+
+    # Pour la méthode GET et en cas d'échec du POST
+    current_dt = datetime.now()
+    year = int(request.args.get('year', current_dt.year))
+    month = int(request.args.get('month', current_dt.month))
+
+    # Empêcher la navigation vers des mois/années invalides (trop loin dans le passé/futur)
+    if not (current_dt.year -1 <= year <= current_dt.year + 1): # Limite à +/- 1 an
+        year = current_dt.year
+        month = current_dt.month
+        flash("Navigation calendaire limitée.", "info")
+
+
+    available_slots = get_available_pickup_slots_for_month_year(year, month)
+    calendar_data = generate_calendar_data(year, month, available_slots)
+    
+    return render_template('select_pickup.html', order=order, calendar_data=calendar_data)
+
+
+@bp.route('/order/<string:order_number>/receipt', methods=['GET'])
+def order_receipt_route(order_number):
+    """Étape 4: Page de reçu de la commande."""
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        flash("Veuillez vous connecter pour voir votre reçu.", "warning")
+        return redirect(url_for('main.login'))
+
+    order = get_order_by_number_for_user(order_number, user_id)
+    if not order:
+        flash("Reçu de commande non trouvé ou accès non autorisé.", "error")
+        return redirect(url_for('main.home'))
+    
+    if order.status != "confirmed" or not order.pickup_slot_id:
+        flash("Cette commande n'est pas encore confirmée ou n'a pas de créneau de retrait.", "warning")
+        
+        if order.status == "pending_pickup_selection":
+            return redirect(url_for('main.select_pickup_slot_route', order_number=order.order_number))
+        return redirect(url_for('main.user_profile', user_id=user_id))
+
+
+    return render_template('order_receipt.html', order=order)
+
+@bp.route('/my-orders')
+def my_orders():
+    """Page pour que l'utilisateur voie ses commandes."""
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        flash("Veuillez vous connecter pour voir vos commandes.", "warning")
+        return redirect(url_for('main.login', next=url_for('main.my_orders')))
+
+    user_orders = get_orders_for_user(user_id)
+    return render_template('my_orders.html', orders=user_orders)
+
+@bp.route('/admin/orders')
+def admin_list_orders():
+    """Page pour que l'administrateur voie toutes les commandes."""
+    user_id = request.cookies.get('user_id')
+    if not user_id or not is_admin(user_id):
+        flash("Accès non autorisé.", "error")
+        abort(403)
+
+    all_orders = get_all_orders_admin()
+    return render_template('admin_orders.html', orders=all_orders)
+
+@bp.route('/order/<string:order_number>/delete', methods=['POST'])
+def delete_order_route(order_number):
+    """Route pour supprimer une commande."""
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        flash("Veuillez vous connecter pour supprimer une commande.", "warning")
+        return redirect(url_for('main.login'))
+
+    success, message = delete_order(order_number, user_id)
+    if success:
+        flash(message, "success")
+    else:
+        flash(message, "error")
+    
+    # Rediriger vers la page "Mes commandes" ou une autre page appropriée
+    return redirect(url_for('main.my_orders'))
+
+@bp.route('/admin/order/<string:order_number>/complete', methods=['POST'])
+def admin_complete_order_route(order_number):
+    """Route pour qu'un admin marque une commande comme complétée."""
+    user_id = request.cookies.get('user_id')
+    if not user_id or not is_admin(user_id):
+        flash("Accès non autorisé.", "error")
+        abort(403)
+
+    success, message = complete_order_admin(order_number)
+    if success:
+        flash(message, "success")
+    else:
+        flash(message, "error")
+    
+    return redirect(url_for('main.order_receipt_route', order_number=order_number))
+
+@bp.route('/admin/completed-orders')
+def admin_list_completed_orders():
+    """Page pour que l'administrateur voie toutes les commandes complétées."""
+    user_id = request.cookies.get('user_id')
+    if not user_id or not is_admin(user_id):
+        flash("Accès non autorisé.", "error")
+        abort(403)
+
+    completed_orders = get_all_completed_orders_admin()
+    return render_template('admin_completed_orders.html', orders=completed_orders)

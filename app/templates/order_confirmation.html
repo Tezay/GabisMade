@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmation de Commande - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/order_confirmation.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <h1 class="confirmation-header">Confirmez Votre Commande</h1>
+
+    <div class="info-text">
+        <p>Vous êtes sur le point de créer une nouvelle réservation.</p>
+        <p>Après confirmation, vous pourrez choisir un créneau pour récupérer vos produits directement auprès de nous.</p>
+        <p><strong>Aucun paiement n'est requis pour le moment.</strong> Le règlement s'effectuera sur place, lors du retrait de votre commande.</p>
+    </div>
+
+    <div class="cart-summary-confirmation">
+        <h3>Récapitulatif de votre panier</h3>
+        {% if cart_items %}
+            {% for item in cart_items %}
+            <div class="summary-row">
+                <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                <span>{{ "%.2f"|format(item.product.price * item.quantity) }}€</span>
+            </div>
+            {% endfor %}
+            <div class="summary-total">
+                <span>Total à régler au retrait</span>
+                <span class="total-price">{{ "%.2f"|format(total_price) }}€</span>
+            </div>
+            <div class="summary-row" style="font-size: 1rem; color: var(--text-light); margin-top: 0.5rem;">
+                <span>Nombre total d'articles</span>
+                <span>{{ item_count }}</span>
+            </div>
+        {% else %}
+            <p>Votre panier est vide.</p>
+        {% endif %}
+    </div>
+
+    <div class="actions">
+        {% if cart_items %}
+        <form action="{{ url_for('main.create_order_route') }}" method="POST" style="display: inline-block; margin-right: 10px;">
+            <button type="submit" class="btn btn-proceed">
+                Valider et Choisir un Créneau de Retrait
+            </button>
+        </form>
+        {% endif %}
+        <a href="{{ url_for('main.cart') }}" class="btn btn-cancel" style="display: inline-block; background-color: #6c757d; color: white; padding: 0.8rem 1.5rem; border-radius: 25px; text-decoration: none; font-size: 1rem; font-weight: 600;">Retour au panier</a>
+    </div>
+</div>
+{% endblock %}

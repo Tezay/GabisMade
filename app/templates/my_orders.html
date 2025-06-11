@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Commandes - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_orders.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="orders-container">
+    <h1 class="orders-header">Mes Commandes</h1>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-card-header">
+                <h3>Commande #{{ order.order_number }}</h3>
+                <span class="order-status status-{{ order.status.lower() }}">
+                    {% if order.status == "pending_pickup_selection" %}En attente de choix du créneau
+                    {% elif order.status == "confirmed" %}Confirmée
+                    {% elif order.status == "completed" %}Terminée
+                    {% elif order.status == "cancelled" %}Annulée
+                    {% else %}{{ order.status|replace('_', ' ')|capitalize }}
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="order-details-grid">
+                <div class="detail-item">
+                    <p><strong>Date :</strong> {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p><strong>Total :</strong> <span style="color: var(--accent-color); font-weight: bold;">{{ "%.2f"|format(order.total_price) }}€</span></p>
+                </div>
+                <div class="detail-item">
+                    {% if order.pickup_slot %}
+                        <p><strong>Retrait :</strong> {{ order.pickup_slot.slot_datetime.strftime('%A %d/%m %Hh%M')|capitalize }}</p>
+                        <p><strong>Lieu :</strong> {{ order.pickup_slot.location }}</p>
+                    {% else %}
+                        <p><strong>Retrait :</strong> Non défini</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="order-items-list">
+                <h4>Articles :</h4>
+                <ul>
+                    {% for item in order.items %}
+                    <li>{{ item.product.name }} (x{{ item.quantity }}) - {{ "%.2f"|format(item.price_at_purchase * item.quantity) }}€</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="order-actions">
+                {% if order.status == "pending_pickup_selection" %}
+                    <a href="{{ url_for('main.select_pickup_slot_route', order_number=order.order_number) }}" class="btn-select-pickup">Choisir un créneau</a>
+                {% elif order.status == "confirmed" %}
+                    <a href="{{ url_for('main.order_receipt_route', order_number=order.order_number) }}" class="btn-view-receipt">Voir le reçu</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-orders">
+            <p>Vous n'avez pas encore passé de commande.</p>
+            <a href="{{ url_for('main.list_products') }}" class="btn btn-primary">Découvrir nos produits</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

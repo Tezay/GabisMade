@@ -22,13 +22,32 @@
             
             {% if g.user_logged_in %}
                 <li>
-                    <a href="{{ url_for('main.user_profile', user_id=request.cookies.get('user_id')) }}" class="btn-login">
+                    <a href="{{ url_for('main.user_profile', user_id=request.cookies.get('user_id')) }}" 
+                       class="btn-login {% if request.endpoint == 'main.user_profile' %}active{% endif %}">
                         Mon compte
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.my_orders') }}" 
+                       class="{% if request.endpoint == 'main.my_orders' %}active{% endif %}">
+                        Mes commandes
                     </a>
                 </li>
                 {% if g.user_is_admin %}
                     <li>
-                        <a href="{{ url_for('main.list_users') }}" style="color: #ffd700;">👑 Admin</a>
+                        <a href="{{ url_for('main.list_users') }}" 
+                           class="{% if request.endpoint == 'main.list_users' %}active{% endif %}" 
+                           style="color: #ffd700;">👑 Admin - Utilisateurs</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.admin_list_orders') }}" 
+                           class="{% if request.endpoint == 'main.admin_list_orders' %}active{% endif %}" 
+                           style="color: #ffd700;">📦 Admin - Commandes</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.admin_list_completed_orders') }}"
+                           class="{% if request.endpoint == 'main.admin_list_completed_orders' %}active{% endif %}"
+                           style="color: #ffd700;">🏁 Admin - Commandes Terminées</a>
                     </li>
                 {% endif %}
             {% else %}

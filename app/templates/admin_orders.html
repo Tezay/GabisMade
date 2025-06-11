@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Toutes les Commandes - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_orders.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-orders-container">
+    <h1 class="admin-orders-header">Gestion des Commandes</h1>
+
+    {% if orders %}
+    <div class="table-responsive">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>N° Commande</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Statut</th>
+                    <th>Créneau Retrait</th>
+                    <th>Lieu Retrait</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td class="order-number"><a href="{{ url_for('main.order_receipt_route', order_number=order.order_number) }}">{{ order.order_number }}</a></td>
+                    <td>{{ order.user.first_name }} {{ order.user.last_name }}</td>
+                    <td>{{ order.created_at.strftime('%d/%m/%y %H:%M') }}</td>
+                    <td>{{ "%.2f"|format(order.total_price) }}€</td>
+                    <td>
+                        <span class="order-status-admin status-{{ order.status.lower() }}">
+                            {% if order.status == "pending_pickup_selection" %}Attente Créneau
+                            {% elif order.status == "confirmed" %}Confirmée
+                            {% elif order.status == "completed" %}Terminée
+                            {% elif order.status == "cancelled" %}Annulée
+                            {% else %}{{ order.status|replace('_', ' ')|capitalize }}
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td>{{ order.pickup_slot.slot_datetime.strftime('%d/%m %Hh%M') if order.pickup_slot else 'N/A' }}</td>
+                    <td>{{ order.pickup_slot.location if order.pickup_slot else 'N/A' }}</td>
+                    <td>
+                        <a href="{{ url_for('main.order_receipt_route', order_number=order.order_number) }}" class="btn btn-sm btn-info">Détails</a>
+                        <!-- Autres actions admin (ex: marquer comme complétée, annuler) pourraient être ajoutées ici -->
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="no-orders-admin">
+            <p>Aucune commande n'a été passée pour le moment.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

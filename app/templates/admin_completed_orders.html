@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Commandes Terminées - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_completed_orders.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-orders-container">
+    <h1 class="admin-orders-header">Commandes Terminées</h1>
+
+    {% if orders %}
+    <div class="table-responsive">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>N° Commande</th>
+                    <th>Client</th>
+                    <th>Date Création</th>
+                    <th>Date Retrait</th>
+                    <th>Total</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td class="order-number"><a href="{{ url_for('main.order_receipt_route', order_number=order.order_number) }}">{{ order.order_number }}</a></td>
+                    <td>{{ order.user.first_name }} {{ order.user.last_name }}</td>
+                    <td>{{ order.created_at.strftime('%d/%m/%y %H:%M') }}</td>
+                    <td>{{ order.pickup_slot.slot_datetime.strftime('%d/%m/%y %Hh%M') if order.pickup_slot else 'N/A' }}</td>
+                    <td>{{ "%.2f"|format(order.total_price) }}€</td>
+                    <td>
+                        <span class="order-status-admin status-{{ order.status.lower() }}">
+                            Terminée
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('main.order_receipt_route', order_number=order.order_number) }}" class="btn btn-sm btn-info">Détails</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="no-orders-admin">
+            <p>Aucune commande n'a été marquée comme terminée pour le moment.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

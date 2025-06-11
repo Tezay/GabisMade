@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmation de Réservation - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/order_receipt.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="receipt-container">
+    <div class="receipt-icon">🎉</div>
+    <div class="receipt-header">
+        <h1>Réservation Confirmée !</h1>
+        <p>Merci d'avoir choisi GabisMade. Votre commande a bien été enregistrée.</p>
+    </div>
+
+    <div class="order-details">
+        <h3>Détails de votre réservation</h3>
+        <div class="detail-item">
+            <strong>Numéro de commande :</strong> {{ order.order_number }}
+        </div>
+        <div class="detail-item">
+            <strong>Date de réservation :</strong> {{ order.created_at.strftime('%d/%m/%Y à %H:%M') }}
+        </div>
+        {% if order.pickup_slot %}
+        <div class="detail-item">
+            <strong>Créneau de retrait :</strong> {{ order.pickup_slot.slot_datetime.strftime('%A %d %B %Y à %Hh%M')|capitalize }}
+        </div>
+        <div class="detail-item">
+            <strong>Lieu de retrait :</strong> {{ order.pickup_slot.location }}
+        </div>
+        {% else %}
+        <div class="detail-item">
+            <strong>Créneau de retrait :</strong> Non spécifié
+        </div>
+        {% endif %}
+        <div class="detail-item">
+            <strong>Total à régler au retrait :</strong> <span style="color: var(--accent-color); font-weight: bold;">{{ "%.2f"|format(order.total_price) }}€</span>
+        </div>
+
+        <div class="order-items-summary">
+            <h4>Articles réservés :</h4>
+            <ul>
+                {% for item in order.items %}
+                <li>{{ item.product.name }} (x{{ item.quantity }})</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="contact-info">
+        <p>N'oubliez pas de vous présenter au lieu et à l'heure convenus pour récupérer vos produits frais.</p>
+        <p>En cas de besoin ou pour toute question, contactez-nous au : <strong>07 68 21 01 00</strong>.</p>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('main.home') }}" class="btn-home">Retour à l'accueil</a>
+        <a href="{{ url_for('main.my_orders') }}" style="margin-left: 1rem;">Voir mes commandes</a>
+
+        {% if g.user_is_admin and order.status == 'confirmed' %}
+        <form action="{{ url_for('main.admin_complete_order_route', order_number=order.order_number) }}" method="POST" style="display: inline-block; margin-left: 1rem;">
+            <button type="submit" class="btn btn-success" style="background-color: var(--success-color); color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 1rem; font-weight: 600; border: none; cursor: pointer;">
+                Marquer comme terminée
+            </button>
+        </form>
+        {% endif %}
+
+        {% if g.user_is_admin and order.status == 'confirmed' %}
+        <button type="button" id="deleteOrderBtn" class="btn btn-danger" style="margin-left: 1rem; background-color: var(--danger-color); color: white; padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 1rem; font-weight: 600; border: none; cursor: pointer;">
+            Supprimer cette commande
+        </button>
+        <form id="deleteOrderForm" action="{{ url_for('main.delete_order_route', order_number=order.order_number) }}" method="POST" style="display: none;">
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+{% if order.status in ['pending_pickup_selection', 'confirmed', 'cancelled'] %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var deleteBtn = document.getElementById('deleteOrderBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+            var confirmationMessage = "Êtes-vous sûr de vouloir supprimer définitivement votre commande ?\n\n";
+            confirmationMessage += "Cette action est irréversible. Cela peut également être embêtant pour nos producteurs partenaires et perturber la logistique de préparation. Merci de votre compréhension.";
+            
+            if (window.confirm(confirmationMessage)) {
+                document.getElementById('deleteOrderForm').submit();
+            }
+        });
+    }
+});
+</script>
+{% endif %}
+
+{% endblock %}
