@@ -313,21 +313,9 @@ def about():
     return render_template('about.html')
 
 
-@bp.route('/contact', methods=['GET', 'POST'])
+@bp.route('/contact', methods=['GET'])
 def contact():
     """Page Contact"""
-    if request.method == 'POST':
-        # Traitement du formulaire de contact
-        name = request.form.get('name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        subject = request.form.get('subject')
-        message = request.form.get('message')
-        
-        # Ici vous pourriez envoyer un email ou sauvegarder le message
-        flash("Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.", "success")
-        return redirect(url_for('main.contact'))
-    
     return render_template('contact.html')
 
 

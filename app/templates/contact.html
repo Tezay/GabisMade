@@ -23,7 +23,7 @@
                 Envoyez-nous un message
             </h2>
             
-            <form class="contact-form" id="contactForm" method="POST" action="{{ url_for('main.contact') }}">
+            <form class="contact-form" id="contactForm">
                 <div class="form-group">
                     <label for="name">Nom complet *</label>
                     <input type="text" id="name" name="name" required placeholder="Jean Dupont">
@@ -56,7 +56,7 @@
                     <textarea id="message" name="message" required placeholder="Votre message..."></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                <button type="button" id="sendEmailButton" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
                     Envoyer le message
                 </button>
             </form>
@@ -158,22 +158,6 @@
     </div>
 </div>
 
-<!-- Message de succès si formulaire envoyé -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div style="position: fixed; top: 100px; right: 20px; background-color: #28a745; color: white; padding: 1rem 2rem; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); z-index: 1000;">
-                {{ message }}
-            </div>
-            <script>
-                setTimeout(() => {
-                    document.querySelector('[style*="position: fixed"]').remove();
-                }, 5000);
-            </script>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
 <script>
 // Toggle FAQ
 function toggleFAQ(item) {
@@ -187,6 +171,32 @@ function toggleFAQ(item) {
     // Toggle l'item cliqué
     item.classList.toggle('active');
 }
+
+document.getElementById('sendEmailButton').addEventListener('click', function() {
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const subjectField = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+
+    if (!name || !email || !subjectField || !message) {
+        alert('Veuillez remplir tous les champs obligatoires (*).');
+        return;
+    }
+
+    const mailtoSubject = encodeURIComponent(`Contact GabisMade: ${subjectField} - ${name}`);
+    let mailtoBody = `Nom: ${name}\n`;
+    mailtoBody += `Email: ${email}\n`;
+    if (phone) {
+        mailtoBody += `Téléphone: ${phone}\n`;
+    }
+    mailtoBody += `Sujet: ${subjectField}\n\n`;
+    mailtoBody += `Message:\n${message}`;
+    
+    mailtoBody = encodeURIComponent(mailtoBody);
+
+    window.location.href = `mailto:contact@gabismade.fr?subject=${mailtoSubject}&body=${mailtoBody}`;
+});
 
 // Animation au scroll
 const observerOptions = {
