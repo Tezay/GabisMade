@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrateur - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Dashboard Administrateur</h1>
+    </div>
+    
+    <!-- Statistiques rapides -->
+    <div class="dashboard-stats">
+        <h2 class="stats-title">Aperçu Général</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value">{{ user_count }}</div>
+                <div class="stat-label">Utilisateurs</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ order_count }}</div>
+                <div class="stat-label">Commandes Actives</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ completed_order_count }}</div>
+                <div class="stat-label">Commandes Terminées</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ product_count }}</div>
+                <div class="stat-label">Produits</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cartes de navigation -->
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="dashboard-icon">👤</div>
+            <h2>Gestion des Utilisateurs</h2>
+            <p>Consulter, modifier ou supprimer les utilisateurs de la plateforme</p>
+            <a href="{{ url_for('main.list_users') }}" class="dashboard-btn">Voir les utilisateurs</a>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="dashboard-icon">📦</div>
+            <h2>Commandes en Cours</h2>
+            <p>Gérer les commandes actives et suivre leur évolution</p>
+            <a href="{{ url_for('main.admin_list_orders') }}" class="dashboard-btn">Voir les commandes</a>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="dashboard-icon">🏁</div>
+            <h2>Commandes Terminées</h2>
+            <p>Accéder à l'historique des commandes complétées</p>
+            <a href="{{ url_for('main.admin_list_completed_orders') }}" class="dashboard-btn">Voir l'historique</a>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="dashboard-icon">🥕</div>
+            <h2>Gestion des Produits</h2>
+            <p>Ajouter ou modifier les produits disponibles</p>
+            <a href="{{ url_for('main.list_products') }}" class="dashboard-btn">Voir les produits</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

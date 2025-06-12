@@ -35,19 +35,9 @@
                 </li>
                 {% if g.user_is_admin %}
                     <li>
-                        <a href="{{ url_for('main.list_users') }}" 
-                           class="{% if request.endpoint == 'main.list_users' %}active{% endif %}" 
-                           style="color: #ffd700;">👑 Admin - Utilisateurs</a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('main.admin_list_orders') }}" 
-                           class="{% if request.endpoint == 'main.admin_list_orders' %}active{% endif %}" 
-                           style="color: #ffd700;">📦 Admin - Commandes</a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('main.admin_list_completed_orders') }}"
-                           class="{% if request.endpoint == 'main.admin_list_completed_orders' %}active{% endif %}"
-                           style="color: #ffd700;">🏁 Admin - Commandes Terminées</a>
+                        <a href="{{ url_for('main.admin_dashboard') }}" 
+                           class="{% if request.endpoint == 'main.admin_dashboard' or request.endpoint == 'main.list_users' or request.endpoint == 'main.admin_list_orders' or request.endpoint == 'main.admin_list_completed_orders' %}active{% endif %}" 
+                           style="color: #ffd700;">👑 Dashboard Admin</a>
                     </li>
                 {% endif %}
             {% else %}

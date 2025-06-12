@@ -567,3 +567,23 @@ def admin_list_completed_orders():
 
     completed_orders = get_all_completed_orders_admin()
     return render_template('admin_completed_orders.html', orders=completed_orders)
+
+@bp.route('/admin/dashboard')
+def admin_dashboard():
+    """Page dashboard administrateur centralisée."""
+    user_id = request.cookies.get('user_id')
+    if not user_id or not is_admin(user_id):
+        flash("Accès non autorisé.", "error")
+        abort(403)
+    
+    # Récupération des statistiques pour le dashboard
+    user_count = User.query.count()
+    order_count = Order.query.filter(Order.status != 'completed').count()
+    completed_order_count = Order.query.filter_by(status='completed').count()
+    product_count = Product.query.count()
+    
+    return render_template('admin_dashboard.html', 
+                          user_count=user_count,
+                          order_count=order_count, 
+                          completed_order_count=completed_order_count,
+                          product_count=product_count)
