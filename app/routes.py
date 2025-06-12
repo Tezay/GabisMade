@@ -36,16 +36,22 @@ def before_request():
     g.user_is_admin = is_admin(user_id) if user_id else False
     
     if g.user_logged_in:
+        # Récupération du nombre d'articles dans le panier
         _, g.cart_item_count = get_cart_total_and_item_count(user_id)
+        
+        # Récupération du nombre de commandes de l'utilisateur
+        user_orders = get_orders_for_user(user_id)
+        g.user_orders_count = len(user_orders) if user_orders else 0
         
         # Récupérer et stocker directement le prénom de l'utilisateur dans g
         user = User.query.get(user_id)
         if user:
             g.user_first_name = user.first_name
         else:
-            g.user_first_name = "Mon Compte"
+            g.user_first_name = "Utilisateur"
     else:
         g.cart_item_count = 0
+        g.user_orders_count = 0
         g.user_first_name = "Invité"
 
 

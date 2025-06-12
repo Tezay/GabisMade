@@ -27,6 +27,9 @@
                        class="nav-button orders-button {% if request.endpoint == 'main.my_orders' %}active{% endif %}">
                         <img src="{{ url_for('static', filename='assets/order.svg') }}" alt="Commandes" class="nav-icon">
                         <span>Mes commandes</span>
+                        <span class="orders-badge" id="orders-badge" {% if g.user_orders_count == 0 %}style="display: none;"{% endif %}>
+                            {{ g.user_orders_count if g.user_orders_count <= 99 else '99+' }}
+                        </span>
                     </a>
                 </li>
                 <li>

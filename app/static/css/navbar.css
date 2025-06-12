@@ -126,7 +126,7 @@
 }
 
 /* Style pour le badge du panier */
-.cart-badge {
+.cart-badge, .orders-badge {
     background-color: #096B68;
     color: white;
     border-radius: 50%;
@@ -142,8 +142,8 @@
     right: -8px;
 }
 
-/* Position relative pour le bouton du panier */
-.cart-button {
+/* Position relative pour le bouton du panier et des commandes */
+.cart-button, .orders-button {
     position: relative;
 }
 
