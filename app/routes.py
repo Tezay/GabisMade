@@ -37,8 +37,16 @@ def before_request():
     
     if g.user_logged_in:
         _, g.cart_item_count = get_cart_total_and_item_count(user_id)
+        
+        # Récupérer et stocker directement le prénom de l'utilisateur dans g
+        user = User.query.get(user_id)
+        if user:
+            g.user_first_name = user.first_name
+        else:
+            g.user_first_name = "Mon Compte"
     else:
         g.cart_item_count = 0
+        g.user_first_name = "Invité"
 
 
 # Route pour ajouter un produit (à la base de données)

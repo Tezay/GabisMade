@@ -12,7 +12,8 @@
             <li><a href="{{ url_for('main.list_products') }}" class="{% if request.endpoint == 'main.list_products' %}active{% endif %}">Boutique</a></li>
             <li><a href="{{ url_for('main.contact') }}" class="{% if request.endpoint == 'main.contact' %}active{% endif %}">Contact</a></li>
             <li>
-                <a href="{{ url_for('main.cart') }}" class="cart-link {% if request.endpoint == 'main.cart' %}active{% endif %}">
+                <a href="{{ url_for('main.cart') }}" class="nav-button cart-button {% if request.endpoint == 'main.cart' %}active{% endif %}">
+                    <img src="{{ url_for('static', filename='assets/cart.svg') }}" alt="Panier" class="nav-icon">
                     <span>Panier</span>
                     <span class="cart-badge" id="cart-badge" {% if g.cart_item_count == 0 %}style="display: none;"{% endif %}>
                         {{ g.cart_item_count if g.cart_item_count <= 99 else '99+' }}
@@ -22,27 +23,30 @@
             
             {% if g.user_logged_in %}
                 <li>
-                    <a href="{{ url_for('main.user_profile', user_id=request.cookies.get('user_id')) }}" 
-                       class="btn-login {% if request.endpoint == 'main.user_profile' %}active{% endif %}">
-                        Mon compte
+                    <a href="{{ url_for('main.my_orders') }}" 
+                       class="nav-button orders-button {% if request.endpoint == 'main.my_orders' %}active{% endif %}">
+                        <img src="{{ url_for('static', filename='assets/order.svg') }}" alt="Commandes" class="nav-icon">
+                        <span>Mes commandes</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('main.my_orders') }}" 
-                       class="{% if request.endpoint == 'main.my_orders' %}active{% endif %}">
-                        Mes commandes
+                    <a href="{{ url_for('main.user_profile', user_id=request.cookies.get('user_id')) }}" 
+                       class="nav-button user-button {% if request.endpoint == 'main.user_profile' %}active{% endif %}">
+                        <img src="{{ url_for('static', filename='assets/user.svg') }}" alt="Utilisateur" class="nav-icon">
+                        <span>{{ g.user_first_name }}</span>
                     </a>
                 </li>
                 {% if g.user_is_admin %}
                     <li>
                         <a href="{{ url_for('main.admin_dashboard') }}" 
-                           class="{% if request.endpoint == 'main.admin_dashboard' or request.endpoint == 'main.list_users' or request.endpoint == 'main.admin_list_orders' or request.endpoint == 'main.admin_list_completed_orders' %}active{% endif %}" 
-                           style="color: #ffd700;">👑 Dashboard Admin</a>
+                           class="nav-button admin-button {% if request.endpoint == 'main.admin_dashboard' or request.endpoint == 'main.list_users' or request.endpoint == 'main.admin_list_orders' or request.endpoint == 'main.admin_list_completed_orders' %}active{% endif %}">
+                            Dashboard Admin
+                        </a>
                     </li>
                 {% endif %}
             {% else %}
                 <li>
-                    <a href="{{ url_for('main.login') }}" class="btn-login">Connexion</a>
+                    <a href="{{ url_for('main.login') }}" class="nav-button login-button">Connexion</a>
                 </li>
             {% endif %}
         </ul>
