@@ -1,7 +1,7 @@
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(rgba(45, 110, 62, 0.8), rgba(45, 110, 62, 0.8)), 
-                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f0f0f0" width="1200" height="600"/><path fill="%232d6e3e" d="M0 300L50 325L100 300L150 275L200 300L250 325L300 300L350 275L400 300L450 325L500 300L550 275L600 300L650 325L700 300L750 275L800 300L850 325L900 300L950 275L1000 300L1050 325L1100 300L1150 275L1200 300V600H0V300Z"/></svg>');
+    background: linear-gradient(rgba(45, 110, 62, 0.1), rgba(45, 110, 62, 0.1)), 
+                url('/static/assets/background_image.webp');
     background-size: cover;
     background-position: center;
     color: white;
@@ -14,6 +14,8 @@
     font-size: 3.5rem;
     margin-bottom: 1rem;
     animation: fadeInUp 1s ease-out;
+    text-shadow: 3px 3px 4px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
 }
 
 .hero-subtitle {
