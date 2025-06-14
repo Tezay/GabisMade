@@ -256,6 +256,82 @@ def book_pickup_slot(slot_id):
     return False # Le créneau n'existe pas ou a été manuellement désactivé
 
 
+def get_all_pickup_slots_for_month_year_admin(year, month):
+    """Récupère TOUS les créneaux de retrait pour un mois et une année donnés (pour admin)."""
+    first_day = datetime(year, month, 1, tzinfo=pytz.utc)
+    if month == 12:
+        last_day = datetime(year + 1, 1, 1, tzinfo=pytz.utc) - timedelta(microseconds=1)
+    else:
+        last_day = datetime(year, month + 1, 1, tzinfo=pytz.utc) - timedelta(microseconds=1)
+
+    slots = PickupSlot.query.filter(
+        PickupSlot.slot_datetime >= first_day,
+        PickupSlot.slot_datetime <= last_day
+    ).order_by(PickupSlot.slot_datetime).all()
+    return slots
+
+def add_pickup_slot(slot_date_str, slot_time_str, location):
+    """Ajoute un nouveau créneau de retrait."""
+    try:
+        slot_date = datetime.strptime(slot_date_str, '%Y-%m-%d').date()
+        slot_time = datetime.strptime(slot_time_str, '%H:%M').time()
+        
+        paris_tz = pytz.timezone('Europe/Paris')
+        naive_datetime = datetime.combine(slot_date, slot_time)
+        paris_datetime = paris_tz.localize(naive_datetime)
+        
+        # Validation de la date
+        now_paris = datetime.now(paris_tz)
+        if paris_datetime < now_paris:
+            return False, "Impossible de créer un créneau dans le passé."
+        
+        one_year_from_now_paris = now_paris + timedelta(days=365) # Approximation, peut être affinée avec relativedelta si besoin exact
+        if paris_datetime > one_year_from_now_paris:
+            return False, "Impossible de créer un créneau plus d'un an dans le futur."
+
+        utc_datetime = paris_datetime.astimezone(pytz.utc)
+
+        # Vérifier les doublons
+        existing_slot = PickupSlot.query.filter_by(
+            slot_datetime=utc_datetime,
+            location=location
+        ).first()
+        if existing_slot:
+            return False, "Un créneau identique existe déjà."
+
+        new_slot = PickupSlot(
+            slot_datetime=utc_datetime,
+            location=location,
+            is_available=True 
+        )
+        db.session.add(new_slot)
+        db.session.commit()
+        return True, "Créneau ajouté avec succès."
+    except ValueError:
+        return False, "Format de date ou d'heure invalide."
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Erreur lors de l'ajout du créneau: {str(e)}"
+
+def remove_pickup_slot(slot_id):
+    """Supprime un créneau de retrait."""
+    slot = PickupSlot.query.get(slot_id)
+    if not slot:
+        return False, "Créneau non trouvé."
+
+    # Vérifier si le créneau est associé à une commande
+    associated_order = Order.query.filter_by(pickup_slot_id=slot_id).first()
+    if associated_order:
+        return False, f"Impossible de supprimer le créneau, il est associé à la commande #{associated_order.order_number}."
+
+    try:
+        db.session.delete(slot)
+        db.session.commit()
+        return True, "Créneau supprimé avec succès."
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Erreur lors de la suppression du créneau: {str(e)}"
+
 ################## Fonctions utiles pour la gestion des commandes ##################
 
 def generate_order_number():

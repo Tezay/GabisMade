@@ -64,6 +64,13 @@
             <p>Ajouter ou modifier les produits disponibles</p>
             <a href="{{ url_for('main.list_products') }}" class="dashboard-btn">Voir les produits</a>
         </div>
+
+        <div class="dashboard-card">
+            <div class="dashboard-icon">🗓️</div>
+            <h2>Gestion des Créneaux</h2>
+            <p>Ajouter ou supprimer des créneaux de retrait</p>
+            <a href="{{ url_for('main.admin_manage_calendar_route') }}" class="dashboard-btn">Gérer les créneaux</a>
+        </div>
     </div>
 </div>
 {% endblock %}

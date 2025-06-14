@@ -1,0 +1,106 @@
+.admin-calendar-manage .pickup-header {
+    margin-bottom: 2rem;
+}
+
+.admin-calendar-manage .calendar td {
+    min-height: 120px; /* Ensure cells have enough height for content */
+    vertical-align: top;
+}
+
+.admin-calendar-manage .slots-list.admin-slots-list {
+    padding-left: 0;
+    margin-top: 5px;
+}
+
+.admin-calendar-manage .slots-list.admin-slots-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85em;
+    padding: 4px;
+    margin-bottom: 4px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.admin-calendar-manage .slots-list.admin-slots-list li span {
+    flex-grow: 1;
+}
+
+.admin-calendar-manage .remove-slot-form {
+    display: inline;
+    margin-left: 10px;
+}
+
+.admin-calendar-manage .btn-remove-slot {
+    background-color: transparent;
+    color: var(--danger-color);
+    border: none;
+    padding: 2px 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+.admin-calendar-manage .btn-remove-slot:hover {
+    color: darkred;
+}
+
+.add-slot-form-container {
+    margin-top: 3rem;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.add-slot-form-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+#addPickupSlotForm .form-group {
+    margin-bottom: 1rem;
+}
+
+#addPickupSlotForm label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+#addPickupSlotForm input[type="date"],
+#addPickupSlotForm input[type="time"],
+#addPickupSlotForm input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius-small);
+    box-sizing: border-box;
+}
+
+#addPickupSlotForm .submit-section {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+#addPickupSlotForm .btn-confirm-slot {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+}
+#addPickupSlotForm .btn-confirm-slot:hover {
+    background-color: var(--primary-color);
+}
+
+/* Ensure calendar cells in admin view can show past slots if needed */
+.admin-calendar-manage .calendar .past-day .slots-list {
+    opacity: 0.7; /* Slightly dim past slots if shown */
+}
+.admin-calendar-manage .calendar .past-day .slots-list li {
+    border-left-color: #aaa; /* Grey out border for past slots */
+}

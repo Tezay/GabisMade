@@ -5,8 +5,9 @@ from .utils import (
     remove_user, update_product_field_util,
     get_cart_items, add_item_to_cart, update_cart_item_quantity,
     remove_item_from_cart, get_cart_total_and_item_count, clear_cart,
-    get_available_pickup_slots_for_month_year,
-    get_pickup_slot_by_id, book_pickup_slot, generate_order_number,
+    get_available_pickup_slots_for_month_year, # Keep this for user side
+    get_all_pickup_slots_for_month_year_admin, # For admin calendar
+    add_pickup_slot, remove_pickup_slot, # For admin calendar management
     create_order_from_cart, get_order_by_number_for_user, confirm_order_pickup,
     get_orders_for_user, get_all_orders_admin,
     delete_order,
@@ -601,3 +602,58 @@ def admin_dashboard():
                           order_count=order_count, 
                           completed_order_count=completed_order_count,
                           product_count=product_count)
+
+@bp.route('/admin/manage-calendar', methods=['GET', 'POST'])
+def admin_manage_calendar_route():
+    user_id = request.cookies.get('user_id')
+    if not user_id or not is_admin(user_id):
+        flash("Accès non autorisé.", "error")
+        abort(403)
+
+    current_dt = datetime.now()
+    year = int(request.args.get('year', request.form.get('year', current_dt.year)))
+    month = int(request.args.get('month', request.form.get('month', current_dt.month)))
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'add_slot':
+            slot_date_str = request.form.get('slot_date')
+            slot_time_str = request.form.get('slot_time')
+            location = request.form.get('location')
+            if slot_date_str and slot_time_str and location:
+                success, message = add_pickup_slot(slot_date_str, slot_time_str, location)
+                if success:
+                    flash(message, "success")
+                else:
+                    flash(message, "error")
+            else:
+                flash("Veuillez remplir tous les champs pour ajouter un créneau.", "error")
+        elif action == 'remove_slot':
+            slot_id_to_remove = request.form.get('slot_id')
+            if slot_id_to_remove:
+                success, message = remove_pickup_slot(int(slot_id_to_remove))
+                if success:
+                    flash(message, "success")
+                else:
+                    flash(message, "error")
+            else:
+                flash("ID de créneau manquant pour la suppression.", "error")
+        
+        # Redirect to the same month/year after POST
+        return redirect(url_for('main.admin_manage_calendar_route', year=year, month=month))
+
+    # For GET request
+    # Ensure year/month are within a reasonable range if needed, similar to select_pickup_slot_route
+    if not (current_dt.year - 5 <= year <= current_dt.year + 5): # Example range: +/- 5 years
+        year = current_dt.year
+        month = current_dt.month
+        flash("Navigation calendaire limitée à une plage raisonnable.", "info")
+
+    all_slots_for_month = get_all_pickup_slots_for_month_year_admin(year, month)
+    # Pass admin_view=True if you modify generate_calendar_data, or ensure it handles all slots correctly
+    calendar_data = generate_calendar_data(year, month, all_slots_for_month) 
+    
+    return render_template('admin_manage_calendar.html', 
+                           calendar_data=calendar_data,
+                           current_year=year,
+                           current_month=month)

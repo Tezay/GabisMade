@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Créneaux de Retrait - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/select_pickup.css') }}"> <!-- Re-use similar styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_manage_calendar.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="pickup-container admin-calendar-manage">
+    <h1 class="pickup-header">Gestion des Créneaux de Retrait</h1>
+
+    <div class="calendar-nav">
+        <a href="{{ url_for('main.admin_manage_calendar_route') }}?year={{ calendar_data.prev_month_params.split('=')[1].split('&')[0] }}&month={{ calendar_data.prev_month_params.split('=')[2] }}">&laquo; Mois Précédent</a>
+        <h2>{{ calendar_data.month_name }} {{ calendar_data.year }}</h2>
+        <a href="{{ url_for('main.admin_manage_calendar_route') }}?year={{ calendar_data.next_month_params.split('=')[1].split('&')[0] }}&month={{ calendar_data.next_month_params.split('=')[2] }}">Mois Suivant &raquo;</a>
+    </div>
+
+    <table class="calendar">
+        <thead>
+            <tr>
+                <th>Lun</th><th>Mar</th><th>Mer</th><th>Jeu</th><th>Ven</th><th>Sam</th><th>Dim</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in calendar_data.weeks %}
+            <tr>
+                {% for day_info in week %}
+                <td class="{% if not day_info.is_current_month %}other-month{% endif %}
+                           {% if day_info.is_today %}today{% endif %}
+                           {% if day_info.has_slots %}has-slots{% endif %}
+                           {% if day_info.is_past %}past-day{% endif %}">
+                    
+                    <span class="day-number">{{ day_info.day }}</span>
+                    
+                    {% if day_info.is_current_month %}
+                        {% if day_info.slots_for_day %}
+                            <ul class="slots-list admin-slots-list">
+                            {% for slot in day_info.slots_for_day %}
+                                <li>
+                                    <span>{{ slot.time }} - {{ slot.location }}</span>
+                                    <form method="POST" action="{{ url_for('main.admin_manage_calendar_route') }}" class="remove-slot-form">
+                                        <input type="hidden" name="action" value="remove_slot">
+                                        <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                                        <input type="hidden" name="year" value="{{ current_year }}">
+                                        <input type="hidden" name="month" value="{{ current_month }}">
+                                        <button type="submit" class="btn-remove-slot" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce créneau ?');">✕</button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        {% elif not day_info.has_slots and day_info.date_obj.weekday() < 7 %} <!-- Any day can have slots -->
+                            <span class="no-slots"></span> <!-- No "Aucun créneau" message needed for admin if empty -->
+                        {% endif %}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="add-slot-form-container">
+        <h2>Ajouter un nouveau créneau</h2>
+        <form method="POST" action="{{ url_for('main.admin_manage_calendar_route') }}" id="addPickupSlotForm">
+            <input type="hidden" name="action" value="add_slot">
+            <input type="hidden" name="year" value="{{ current_year }}">
+            <input type="hidden" name="month" value="{{ current_month }}">
+            <div class="form-group">
+                <label for="slot_date">Date :</label>
+                <input type="date" id="slot_date" name="slot_date" required>
+            </div>
+            <div class="form-group">
+                <label for="slot_time">Heure :</label>
+                <input type="time" id="slot_time" name="slot_time" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Lieu :</label>
+                <input type="text" id="location" name="location" placeholder="Ex: Efrei Paris" required>
+            </div>
+            <div class="submit-section">
+                <button type="submit" class="btn-confirm-slot">Ajouter le créneau</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
