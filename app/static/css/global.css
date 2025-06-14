@@ -107,46 +107,6 @@ button:hover, .btn:hover {
     background-color: #c82333;
 }
 
-/* Formulaires */
-form {
-    background-color: var(--background-white);
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    margin: 2rem 0;
-}
-
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-dark);
-    font-weight: 500;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="password"],
-input[type="email"],
-input[type="tel"],
-textarea,
-select {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    transition: var(--transition);
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(45, 110, 62, 0.2);
-}
-
 /* Messages d'alerte */
 .alert {
     padding: 1rem;
