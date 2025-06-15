@@ -1,7 +1,4 @@
-# GabisMade
-Website for GabisMade
-
----
+# Website for GabisMade
 
 ## Installation & Lancement
 
@@ -72,3 +69,16 @@ flask run
 ```bash
 python reset_db.py
 ```
+
+---
+
+## Licence et Utilisation
+
+Ce projet est fourni sous une licence personnalisée qui restreint son utilisation. Le code est destiné **uniquement à des fins éducatives et de démonstration**.
+
+**Les restrictions clés incluent (mais ne sont pas limitées à) :**
+-   Aucune copie ou modification du code.
+-   Aucune redistribution ou sous-licence.
+-   Aucune utilisation pour des projets commerciaux ou non commerciaux au-delà de la visualisation éducative personnelle.
+
+Veuillez lire attentivement le fichier [LICENSE](LICENSE) complet avant d'interagir avec ce dépôt. Tous droits réservés par l'auteur.
