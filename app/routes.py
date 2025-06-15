@@ -322,6 +322,16 @@ def user_profile(user_id):
 
     return render_template('user_profile.html', user=user)
 
+@bp.route('/terms-of-service')
+def terms_of_service():
+    """Page des Conditions d'Utilisation"""
+    return render_template('terms_of_service.html')
+
+@bp.route('/privacy-policy')
+def privacy_policy():
+    """Page de Politique de Confidentialité"""
+    return render_template('privacy_policy.html')
+
 @bp.route('/about')
 def about():
     """Page À propos"""

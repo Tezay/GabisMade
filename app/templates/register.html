@@ -114,7 +114,7 @@
                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                     <input type="checkbox" required style="width: auto; margin: 0;">
                     <span style="font-size: 0.9rem; color: var(--text-light);">
-                        J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a>
+                        J'accepte les <a href="{{ url_for('main.terms_of_service') }}" target="_blank">conditions d'utilisation</a> et la <a href="{{ url_for('main.privacy_policy') }}" target="_blank">politique de confidentialité</a>
                     </span>
                 </label>
             </div>

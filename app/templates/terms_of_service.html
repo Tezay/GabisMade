@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Conditions d'Utilisation - GabisMade{% endblock %}
+
+{% block extra_css %}
+<style>
+    .legal-content {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+    .legal-content h1 {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .legal-content h2 {
+        color: var(--primary-color);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    .legal-content p, .legal-content ul {
+        margin-bottom: 1rem;
+        line-height: 1.7;
+    }
+    .legal-content ul {
+        padding-left: 20px;
+    }
+    .disclaimer {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 1rem;
+        border: 1px solid #ffeeba;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="legal-content">
+    <h1>Conditions d'Utilisation</h1>
+
+    <p>Date de dernière mise à jour : 15/06/2025</p>
+
+    <h2>1. Préambule</h2>
+    <p>Les présentes conditions générales d'utilisation (ci-après "CGU") régissent l'accès et l'utilisation du site GabisMade (ci-après "le Site"), accessible à l'adresse https://gabismade.fr/. Le Site est exploité par Gabriel Vogin, ci-après "l'Exploitant".</p>
+    <p>L'utilisation du Site implique l'acceptation pleine et entière des présentes CGU.</p>
+
+    <h2>2. Objet du Site</h2>
+    <p>Le Site a pour objet de permettre la réservation de produits locaux proposés par des producteurs partenaires, avec un point de retrait principal à Efrei Paris.</p>
+
+    <h2>3. Conditions d'accès et d'inscription</h2>
+    <p>L'accès à certaines fonctionnalités du Site, notamment la création d'un compte et la réservation de produits, est subordonné à une inscription préalable.</p>
+    <p>Pour s'inscrire, l'utilisateur doit :</p>
+    <ul>
+        <li>Être une personne physique majeure et capable juridiquement.</li>
+        <li>Fournir des informations exactes, complètes et à jour.</li>
+        <li><strong>Avoir un lien avec l'école Efrei Paris (étudiant, personnel, enseignant, parent d'élève, ancien élève, ou connaissance directe d'un membre de la communauté Efrei Paris). L'Exploitant se réserve le droit de vérifier cette affiliation et de refuser ou supprimer un compte ne respectant pas cette condition.</strong></li>
+    </ul>
+    <p>L'utilisateur est responsable de la confidentialité de ses identifiants de connexion.</p>
+
+    <h2>4. Obligations de l'utilisateur</h2>
+    <p>L'utilisateur s'engage à utiliser le Site conformément aux lois et règlements en vigueur et aux présentes CGU. Il s'interdit notamment de :</p>
+    <ul>
+        <li>Utiliser le Site à des fins illicites ou frauduleuses.</li>
+        <li>Porter atteinte aux droits de tiers (propriété intellectuelle, vie privée, etc.).</li>
+        <li>Perturber le bon fonctionnement du Site.</li>
+        <li>Fournir des informations fausses ou trompeuses.</li>
+    </ul>
+
+    <h2>5. Processus de réservation et de paiement</h2>
+    <p>Les réservations s'effectuent en ligne via le Site. Le paiement des produits s'effectue au moment du retrait de la commande, selon les modalités indiquées.</p>
+    <p>L'Exploitant s'efforce de garantir la disponibilité des produits affichés, mais ne saurait être tenu responsable en cas d'indisponibilité imprévue.</p>
+
+    <h2>6. Responsabilité</h2>
+    <p>L'Exploitant met tout en œuvre pour assurer un accès de qualité au Site et à ses services, mais ne souscrit à aucune obligation de résultat à cet égard.</p>
+    <p>La responsabilité de l'Exploitant ne saurait être engagée en cas de force majeure, de dysfonctionnement du réseau internet ou des équipements informatiques de l'utilisateur.</p>
+    <p>L'Exploitant agit comme intermédiaire entre les producteurs et les utilisateurs. La qualité des produits relève de la responsabilité des producteurs partenaires.</p>
+
+    <h2>7. Propriété intellectuelle</h2>
+    <p>Tous les éléments du Site (textes, images, logos, etc.) sont protégés par le droit de la propriété intellectuelle et sont la propriété exclusive de l'Exploitant ou de ses partenaires. Toute reproduction ou utilisation non autorisée est interdite.</p>
+
+    <h2>8. Données personnelles</h2>
+    <p>La collecte et le traitement des données personnelles des utilisateurs sont régis par la Politique de Confidentialité du Site, accessible <a href="{{ url_for('main.privacy_policy') }}">ici</a>.</p>
+
+    <h2>9. Modification des CGU</h2>
+    <p>L'Exploitant se réserve le droit de modifier à tout moment les présentes CGU. Les utilisateurs seront informés de ces modifications. L'utilisation du Site après modification vaut acceptation des nouvelles CGU.</p>
+
+    <h2>10. Droit applicable et juridiction compétente</h2>
+    <p>Les présentes CGU sont soumises au droit français. En cas de litige, et à défaut d'accord amiable, les tribunaux français seront seuls compétents.</p>
+
+    <h2>11. Contact</h2>
+    <p>Pour toute question relative aux présentes CGU, vous pouvez contacter l'Exploitant à l'adresse suivante : contact@gabismade.fr.</p>
+
+</div>
+{% endblock %}

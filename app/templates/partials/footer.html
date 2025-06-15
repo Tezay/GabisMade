@@ -25,8 +25,8 @@
             <ul>
                 <li><a href="{{ url_for('main.about') }}">À propos</a></li>
                 <li><a href="#">Livraison & Récupération</a></li>
-                <li><a href="#">Conditions d'utilisation</a></li>
-                <li><a href="#">Politique de confidentialité</a></li>
+                <li><a href="{{ url_for('main.terms_of_service') }}">Conditions d'utilisation</a></li>
+                <li><a href="{{ url_for('main.privacy_policy') }}">Politique de confidentialité</a></li>
                 <li><a href="https://github.com/Tezay/GabisMade" target="_blank" rel="noopener">GitHub</a></li>
             </ul>
         </div>
