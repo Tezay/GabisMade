@@ -3,6 +3,8 @@ from . import db
 from datetime import datetime, timedelta, time
 import pytz # For timezone
 import uuid # For order number generation
+from .discord_utils import send_discord_notification
+from config import Config
 
 ################## Fonctions utiles pour la gestion des produits ##################
 
@@ -381,6 +383,7 @@ def create_order_from_cart(user_id):
         clear_cart(user_id)
         
         db.session.commit()
+
         return new_order, "Commande créée avec succès. Veuillez sélectionner un créneau de retrait."
     except Exception as e:
         db.session.rollback()
@@ -401,11 +404,14 @@ def confirm_order_pickup(order_number, pickup_slot_id, user_id):
     # Recherche la commande par son numéro et l'ID de l'utilisateur pour s'assurer que l'utilisateur a accès à cette commande
     order = get_order_by_number_for_user(order_number, user_id) 
     slot = PickupSlot.query.get(pickup_slot_id)
+    user = User.query.get(user_id)
 
     if not order:
         return False, "Commande non trouvée ou accès non autorisé."
     if not slot:
         return False, "Créneau de retrait non trouvé."
+    if not user:
+        return False, "Utilisateur non trouvé pour la notification."
     
     # Vérifie si le créneau est manuellement marqué comme indisponible par un admin.
     if not slot.is_available:
@@ -419,6 +425,24 @@ def confirm_order_pickup(order_number, pickup_slot_id, user_id):
             
     try:
         db.session.commit() # Sauvegarde les modifications de la commande
+
+        if Config.DISCORD_NOTIFICATIONS_ENABLED and Config.DISCORD_BOT_TOKEN and Config.DISCORD_SERVER_ID and Config.DISCORD_CHANNEL_ID:
+            # Pour la notification Discord, prépare les détails des articles de la commande
+            order_items_details_for_discord = []
+            for item_in_order in order.items:
+                if item_in_order.product:
+                    order_items_details_for_discord.append({
+                        'name': item_in_order.product.name,
+                        'quantity': item_in_order.quantity,
+                        'price_at_purchase': item_in_order.price_at_purchase 
+                    })
+            
+            # Envoie la notification Discord après la confirmation du créneau
+            try:
+                send_discord_notification(order, user, user.phone_number, order_items_details_for_discord, slot)
+            except Exception as e:
+                print(f"Error sending Discord notification after slot confirmation: {e}")
+
         return True, "Créneau de retrait confirmé pour votre commande."
     except Exception as e:
         db.session.rollback()

@@ -29,7 +29,7 @@ source .venv/bin/activate
 ### 4. Installer les dépendances
 
 ```bash
-pip install -r requirements.txt python-dotenv
+pip install -r requirements.txt
 ```
 
 ### 5. Configurer les variables d'environnement
@@ -47,6 +47,12 @@ EXTERNAL_CALENDAR_URL='votre_url_icalendar_ici'
 
 # Email configuration
 CONTACT_EMAIL_RECIPIENT='contact@gabismade.fr'
+
+# Discord Bot Configuration (for order notifications)
+DISCORD_BOT_TOKEN='votre_token_de_bot_discord'
+DISCORD_SERVER_ID='id_de_votre_serveur_discord'
+DISCORD_CHANNEL_ID='id_du_salon_discord_pour_les_notifications'
+DISCORD_NOTIFICATIONS_ENABLED='False'
 ```
 **Important:** Remplacez les valeurs d'exemple par vos configurations réelles.
 
@@ -106,7 +112,22 @@ Assurez-vous que la variable `EXTERNAL_CALENDAR_URL` est correctement définie d
 EXTERNAL_CALENDAR_URL='https://votre-url-de-flux-icalendar.ics'
 ```
 
-#### 2. Exécution Manuelle :
+#### 2. Configuration des Notifications Discord (Optionnel) :
+
+Si vous souhaitez activer les notifications de nouvelles commandes sur un serveur Discord :
+1.  Créez un Bot Discord et obtenez son token.
+2.  Invitez le bot sur votre serveur Discord.
+3.  Obtenez l'ID de votre serveur Discord et l'ID du salon où les notifications doivent être envoyées.
+4.  Ajoutez les variables suivantes à votre fichier `.env` :
+    ```env
+    DISCORD_BOT_TOKEN='VOTRE_TOKEN_DE_BOT_ICI'
+    DISCORD_SERVER_ID='ID_DE_VOTRE_SERVEUR_ICI'
+    DISCORD_CHANNEL_ID='ID_DE_VOTRE_SALON_ICI'
+    DISCORD_NOTIFICATIONS_ENABLED='True' # Changez à 'False' pour désactiver
+    ```
+    Le bot doit avoir les permissions de lire les messages et d'envoyer des messages dans le salon spécifié.
+
+#### 3. Exécution Manuelle (pour le script de calendrier):
 
 Exécutez le script depuis la racine du projet :
 
