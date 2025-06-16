@@ -64,10 +64,8 @@ flask shell
 
 #### Puis dans le Shell Python :
 ```python
-from app import db, create_app
-app = create_app() # Crée une instance de l'application pour le contexte
-with app.app_context():
-    db.create_all()
+from app import db
+db.create_all()
 exit()
 ```
 ##### ⚠️ Le fichier de base de données (par défaut `app.db` ou `site.db` selon votre `DATABASE_URL`) sera généré dans le dossier `instance/`.
