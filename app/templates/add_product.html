@@ -8,36 +8,73 @@
 
 
 {% block content %}
+<div class="admin-form-container">
+    <h1>Ajouter un Nouveau Produit</h1>
 
-<h1>Ajouter un nouveau produit</h1>
+    <a href="{{ url_for('main.list_products') }}" class="back-link">← Revenir à la liste des produits</a>
 
-<a href="{{ url_for('main.list_products') }}">Revenir à la liste des produits</a>
+    <form method="POST" enctype="multipart/form-data" class="styled-form">
+        <div class="form-group">
+            <label for="nom">Nom :</label>
+            <input type="text" id="nom" name="nom" required>
+        </div>
 
-<form method="POST" enctype="multipart/form-data">
-    <label>Nom :</label><br>
-    <input type="text" name="nom" required><br><br>
+        <div class="form-group">
+            <label for="description">Description :</label>
+            <textarea id="description" name="description" rows="4" required></textarea>
+        </div>
 
-    <label>Description :</label><br>
-    <textarea name="description" required></textarea><br><br>
+        <div class="form-group">
+            <label for="prix">Prix (€) :</label>
+            <input type="number" id="prix" step="0.01" name="prix" required>
+        </div>
 
-    <label>Prix :</label><br>
-    <input type="number" step="0.01" name="prix" required><br><br>
+        <div class="form-group">
+            <label for="stock">Stock :</label>
+            <input type="number" id="stock" name="stock" required>
+        </div>
 
-    <label>Stock :</label><br>
-    <input type="number" name="stock" required><br><br>
+        <div class="form-group">
+            <label for="image">Image :</label>
+            <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event, 'image_preview')">
+            <div class="image-preview" id="image_preview">
+                <span class="preview-text">Aperçu de l'image</span>
+            </div>
+        </div>
 
-    <label>Image :</label><br>
-    <input type="file" name="image" accept="image/*"><br><br>
+        <div class="form-group">
+            <label for="production_place_id">Lieu de production :</label>
+            <select id="production_place_id" name="production_place_id">
+                <option value="">Aucun lieu précisé</option>
+                {% for place in places %}
+                    <option value="{{ place.id }}">{{ place.name }} ({{ place.producer_name }})</option>
+                {% endfor %}
+            </select>
+        </div>
 
-    <label>Lieu de production :</label><br>
-    <select name="production_place_id">
-        <option value="">Aucun lieu précisé</option>
-        {% for place in places %}
-            <option value="{{ place.id }}">{{ place.name }} ({{ place.producer_name }})</option>
-        {% endfor %}
-    </select><br><br>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Ajouter le Produit</button>
+        </div>
+    </form>
+</div>
 
-    <button type="submit">Ajouter</button>
-</form>
-
+<script>
+function previewImage(event, previewId) {
+    const reader = new FileReader();
+    const previewContainer = document.getElementById(previewId);
+    
+    reader.onload = function(){
+        previewContainer.innerHTML = ''; // Clear previous preview
+        const img = document.createElement('img');
+        img.src = reader.result;
+        previewContainer.appendChild(img);
+    }
+    
+    if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    } else {
+        previewContainer.innerHTML = '<span class="preview-text">Aperçu de l\'image</span>'; // Reset to placeholder
+    }
+}
+</script>
 {% endblock %}

@@ -38,7 +38,7 @@
                     <img src="{{ url_for('static', filename=product.production_place.producer_photo_path or 'img/default-producer.png') }}" alt="Producteur" onerror="this.style.display='none'">
                     <div class="producer-details">
                         <h3>
-                            <a href="{{ url_for('main.production_place_page', place_id=product.production_place.id) }}" target="_blank" style="color: var(--primary-color); text-decoration: underline;">
+                            <a href="{{ url_for('main.production_place_page', place_id=product.production_place.id) }}" target="_blank" style="color: var(--primary-color);">
                                 {{ product.production_place.name }}
                             </a>
                         </h3>
@@ -129,11 +129,6 @@
     <!-- Informations supplémentaires -->
     <div class="additional-info">
         <div class="info-card">
-            <i>🚚</i>
-            <h3>Livraison locale</h3>
-            <p>Récupération à Paris ou livraison groupée</p>
-        </div>
-        <div class="info-card">
             <i>🌱</i>
             <h3>100% Local</h3>
             <p>Directement du producteur à votre table</p>
@@ -141,7 +136,7 @@
         <div class="info-card">
             <i>💰</i>
             <h3>Paiement flexible</h3>
-            <p>Payez à la récupération, en espèces ou CB</p>
+            <p>Payez en espèce directement à la récupération.</p>
         </div>
         <div class="info-card">
             <i>📞</i>

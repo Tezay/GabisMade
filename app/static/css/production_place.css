@@ -17,25 +17,48 @@
     margin-bottom: 2rem;
 }
 
-.production-place-info img {
+.production-place-info-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.producer-photo {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
     margin-right: 2rem;
+    border: 3px solid var(--secondary-color);
+    flex-shrink: 0;
+    align-self: center;
 }
 
-.production-place-info h1 {
-    margin-bottom: 0.5rem;
+.production-place-names {
+    display: flex;
+    flex-direction: column;
 }
 
-.production-place-info h3 {
+.production-place-names h1 {
+    margin-bottom: 0.25rem;
+    font-size: 2rem;
     color: var(--primary-color);
-    margin-bottom: 0.5rem;
 }
 
-.production-place-info p {
-    margin-bottom: 0.5rem;
+.production-place-names h3 {
+    color: var(--text-dark);
+    margin-bottom: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.production-place-details p {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.production-place-details p:last-child {
+    margin-bottom: 0;
 }
 
 /* Section des autres produits du producteur */
@@ -49,7 +72,7 @@
     font-size: 1.5rem;
 }
 
-/* Grille des produits - reprend le style de products_list.css */
+/* Grille des produits */
 .products-grid {
     display: flex;
     flex-wrap: wrap;

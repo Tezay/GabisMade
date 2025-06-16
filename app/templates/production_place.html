@@ -10,15 +10,17 @@
 {% block content %}
 <div class="production-place-banner" style="background-image: url('{{ url_for('static', filename=place.place_photo_path or 'img/default.png') }}');"></div>
 <div class="production-place-info">
-    <div class="production-place-info-flex">
-        <img src="{{ url_for('static', filename=place.producer_photo_path or 'img/default-producer.png') }}" alt="Producteur">
-        <div>
+    <div class="production-place-info-header">
+        <img src="{{ url_for('static', filename=place.producer_photo_path or 'img/default-producer.png') }}" alt="Photo de {{ place.producer_name }}" class="producer-photo">
+        <div class="production-place-names">
             <h1>{{ place.name }}</h1>
             <h3>👤 {{ place.producer_name }}</h3>
-            <p>📍 {{ place.address }}</p>
-            <p>{{ place.description }}</p>
-            <p>Contact : <a href="mailto:{{ place.contact_email }}">{{ place.contact_email }}</a></p>
         </div>
+    </div>
+    <div class="production-place-details">
+        <p>📍 {{ place.address }}</p>
+        <p>{{ place.description }}</p>
+        <p>Contact : <a href="mailto:{{ place.contact_email }}">{{ place.contact_email }}</a></p>
     </div>
 </div>
 <div class="production-place-products">
