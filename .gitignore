@@ -406,6 +406,9 @@ ENV/
 env/
 .venv*/
 
+# .env files
+.env
+
 # Database files
 instance/
 

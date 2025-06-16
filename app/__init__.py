@@ -2,6 +2,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
 
+from config import Config
+
 # Crée l'objet SQLAlchemy
 db = SQLAlchemy()
 
@@ -11,7 +13,7 @@ def create_app():
 
     # Config de base
     app.config.from_mapping(
-        SECRET_KEY='dev',  # change-le en prod !
+        SECRET_KEY=Config.SECRET_KEY,
         SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'site.db'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
