@@ -117,12 +117,12 @@
 
 /* Style pour le bouton admin */
 .admin-button {
-    background-color: #f6d646;
+    background-color: #096B68;
     color: white !important;
 }
 
 .admin-button:hover {
-    background-color: #ffe066;
+    background-color: #0b7d79;
 }
 
 /* Style pour le badge du panier */
