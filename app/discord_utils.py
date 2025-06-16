@@ -10,8 +10,9 @@ load_dotenv(dotenv_path)
 BOT_TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 raw_channel_id = os.environ.get('DISCORD_CHANNEL_ID')
 CHANNEL_ID = int(raw_channel_id) if raw_channel_id and raw_channel_id.isdigit() else 0
+PUBLIC_BASE_URL = os.environ.get('PUBLIC_BASE_URL', '').strip().rstrip('/')
 
-async def send_message_async_logic(embed_data):
+async def send_message_async_logic(embed_data, order_number=None):
     if not BOT_TOKEN or not CHANNEL_ID:
         print("Discord Error: BOT_TOKEN or CHANNEL_ID is not configured correctly.")
         return
@@ -28,7 +29,20 @@ async def send_message_async_logic(embed_data):
             try:
                 # Crée l'embed à partir des données fournies
                 embed = discord.Embed.from_dict(embed_data)
-                await channel.send(embed=embed)
+                # Bouton "Aller à la commande" si order_number et PUBLIC_BASE_URL sont valides
+                view = None
+                if order_number and PUBLIC_BASE_URL:
+                    order_url = f"{PUBLIC_BASE_URL}/order/{order_number}/receipt"
+                    view = discord.ui.View()
+                    view.add_item(
+                        discord.ui.Button(
+                            label="Aller à la commande",
+                            url=order_url,
+                            style=discord.ButtonStyle.link,
+                            emoji="🔗"
+                        )
+                    )
+                await channel.send(embed=embed, view=view)
                 print(f"Discord message sent to channel {CHANNEL_ID}")
             except discord.Forbidden:
                 print(f"Discord Error: Bot does not have permissions to send messages to channel {CHANNEL_ID}.")
@@ -95,11 +109,11 @@ def send_discord_notification(order, user, user_phone_number, order_items_detail
         # Vérifie si une boucle d'événements asyncio est déjà en cours
         asyncio.get_running_loop()
         # Si une boucle est en cours, on crée une tâche asynchrone
-        asyncio.create_task(send_message_async_logic(embed_data))
+        asyncio.create_task(send_message_async_logic(embed_data, order_number=order.order_number))
         print("Discord notification task created for existing event loop.")
     except RuntimeError: # Si aucune boucle n'est en cours, on utilise asyncio.run
         try:
-            asyncio.run(send_message_async_logic(embed_data))
+            asyncio.run(send_message_async_logic(embed_data, order_number=order.order_number))
             print("Discord notification sent using asyncio.run().")
         except RuntimeError as e_run:
             print(f"Discord Error: asyncio.run() failed: {e_run}. Attempting new loop.")
@@ -107,7 +121,7 @@ def send_discord_notification(order, user, user_phone_number, order_items_detail
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             try:
-                loop.run_until_complete(send_message_async_logic(embed_data))
+                loop.run_until_complete(send_message_async_logic(embed_data, order_number=order.order_number))
             finally:
                 loop.close()
                 asyncio.set_event_loop(None)
