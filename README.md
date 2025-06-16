@@ -53,6 +53,8 @@ DISCORD_BOT_TOKEN='votre_token_de_bot_discord'
 DISCORD_SERVER_ID='id_de_votre_serveur_discord'
 DISCORD_CHANNEL_ID='id_du_salon_discord_pour_les_notifications'
 DISCORD_NOTIFICATIONS_ENABLED='False'
+
+PUBLIC_BASE_URL='http://127.0.0.1:5000'
 ```
 **Important:** Remplacez les valeurs d'exemple par vos configurations réelles.
 
