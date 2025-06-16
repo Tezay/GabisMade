@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Stocks - Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_stock_management.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="stock-management-container">
+    <div class="stock-header">
+        <h1>Gestion des Stocks</h1>
+        <a href="{{ url_for('main.admin_dashboard') }}" class="back-link">← Retour au dashboard</a>
+    </div>
+
+    <div class="stock-actions">
+        <a href="{{ url_for('main.add_product') }}" class="btn btn-primary">
+            ➕ Ajouter un nouveau produit
+        </a>
+        <a href="{{ url_for('main.list_products') }}" class="btn btn-secondary">
+            📋 Voir le catalogue public
+        </a>
+    </div>
+
+    {% if products %}
+    <div class="stock-table-container">
+        <table class="stock-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Nom du Produit</th>
+                    <th>Prix</th>
+                    <th>Stock Actuel</th>
+                    <th>Statut</th>
+                    <th>Producteur</th>
+                    <th>Actions Rapides</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr class="product-row">
+                    <td class="product-image-cell">
+                        {% if product.image_path %}
+                            <img src="{{ url_for('static', filename=product.image_path) }}" 
+                                 alt="{{ product.name }}" 
+                                 class="product-thumbnail">
+                        {% else %}
+                            <div class="product-thumbnail-placeholder">📦</div>
+                        {% endif %}
+                    </td>
+                    <td class="product-name-cell">
+                        <strong>{{ product.name }}</strong>
+                        <br>
+                        <small class="product-description">{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</small>
+                    </td>
+                    <td class="product-price-cell">{{ "%.2f"|format(product.price) }}€</td>
+                    <td class="stock-cell">
+                        <div class="stock-info">
+                            <span class="stock-number 
+                                {% if product.stock == 0 %}stock-zero
+                                {% elif product.stock <= 5 %}stock-low
+                                {% else %}stock-ok{% endif %}">
+                                {{ product.stock }}
+                            </span>
+                            <span class="stock-label">unités</span>
+                        </div>
+                    </td>
+                    <td class="status-cell">
+                        <span class="status-badge {% if product.is_active %}status-active{% else %}status-inactive{% endif %}">
+                            {% if product.is_active %}Actif{% else %}Inactif{% endif %}
+                        </span>
+                    </td>
+                    <td class="producer-cell">
+                        {% if product.production_place %}
+                            {{ product.production_place.producer_name }}
+                        {% else %}
+                            <em>Non précisé</em>
+                        {% endif %}
+                    </td>
+                    <td class="actions-cell">
+                        <div class="stock-update-form">
+                            <form method="POST" class="inline-form">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <input type="number" 
+                                       name="new_stock" 
+                                       value="{{ product.stock }}" 
+                                       min="0" 
+                                       class="stock-input"
+                                       onchange="this.form.submit();">
+                            </form>
+                        </div>
+                        <div class="action-buttons">
+                            <a href="{{ url_for('main.product', product_id=product.id) }}" 
+                               class="btn btn-sm btn-info" 
+                               target="_blank">
+                               Voir
+                            </a>
+                            <button onclick="toggleProductStatus('{{ product.id }}', {{ product.is_active|lower }})" 
+                                    class="btn btn-sm {% if product.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                                {% if product.is_active %} Désactiver{% else %} Activer{% endif %}
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Version mobile -->
+    <div class="mobile-stock-grid">
+        {% for product in products %}
+        <div class="mobile-product-card">
+            <div class="mobile-product-header">
+                {% if product.image_path %}
+                    <img src="{{ url_for('static', filename=product.image_path) }}" 
+                         alt="{{ product.name }}" 
+                         class="product-thumbnail">
+                {% else %}
+                    <div class="product-thumbnail-placeholder">📦</div>
+                {% endif %}
+                <div class="mobile-product-info">
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description[:80] }}{% if product.description|length > 80 %}...{% endif %}</p>
+                </div>
+            </div>
+
+            <div class="mobile-product-details">
+                <div class="mobile-detail-item">
+                    <div class="mobile-detail-label">Prix</div>
+                    <div class="mobile-detail-value">{{ "%.2f"|format(product.price) }}€</div>
+                </div>
+                <div class="mobile-detail-item">
+                    <div class="mobile-detail-label">Statut</div>
+                    <div class="mobile-detail-value">
+                        <span class="status-badge {% if product.is_active %}status-active{% else %}status-inactive{% endif %}">
+                            {% if product.is_active %}Actif{% else %}Inactif{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="mobile-detail-item">
+                    <div class="mobile-detail-label">Stock</div>
+                    <div class="mobile-detail-value">
+                        <div class="mobile-stock-info">
+                            <span class="stock-number 
+                                {% if product.stock == 0 %}stock-zero
+                                {% elif product.stock <= 5 %}stock-low
+                                {% else %}stock-ok{% endif %}">
+                                {{ product.stock }}
+                            </span>
+                            <span class="stock-label">unités</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mobile-detail-item">
+                    <div class="mobile-detail-label">Producteur</div>
+                    <div class="mobile-detail-value">
+                        {% if product.production_place %}
+                            {{ product.production_place.producer_name }}
+                        {% else %}
+                            <em>Non précisé</em>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-actions">
+                <div class="mobile-stock-update">
+                    <label>Nouveau stock :</label>
+                    <form method="POST" class="inline-form">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <input type="number" 
+                               name="new_stock" 
+                               value="{{ product.stock }}" 
+                               min="0" 
+                               class="stock-input"
+                               onchange="this.form.submit();">
+                    </form>
+                </div>
+                <div class="mobile-action-buttons">
+                    <a href="{{ url_for('main.product', product_id=product.id) }}" 
+                       class="btn btn-sm btn-info" 
+                       target="_blank">
+                       👁️ Voir
+                    </a>
+                    <button onclick="toggleProductStatus('{{ product.id }}', {{ product.is_active|lower }})" 
+                            class="btn btn-sm {% if product.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                        {% if product.is_active %}⏸️ Désactiver{% else %}▶️ Activer{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-products">
+        <p>Aucun produit trouvé.</p>
+        <a href="{{ url_for('main.add_product') }}" class="btn btn-primary">Ajouter le premier produit</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleProductStatus(productId, currentStatus) {
+    const newStatus = !currentStatus;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/update_product_field/${productId}`;
+
+    const fieldInput = document.createElement('input');
+    fieldInput.type = 'hidden';
+    fieldInput.name = 'field_name';
+    fieldInput.value = 'is_active';
+    form.appendChild(fieldInput);
+
+    const valueInput = document.createElement('input');
+    valueInput.type = 'hidden';
+    valueInput.name = 'new_value';
+    valueInput.value = newStatus.toString();
+    form.appendChild(valueInput);
+
+    const redirectInput = document.createElement('input');
+    redirectInput.type = 'hidden';
+    redirectInput.name = 'redirect_to';
+    redirectInput.value = 'stock_management';
+    form.appendChild(redirectInput);
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Auto-submit sur changement de stock avec feedback visuel
+document.addEventListener('DOMContentLoaded', function() {
+    const stockInputs = document.querySelectorAll('.stock-input');
+    stockInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            this.style.backgroundColor = '#e3f2fd';
+            setTimeout(() => {
+                this.style.backgroundColor = '';
+            }, 1000);
+        });
+    });
+});
+</script>
+{% endblock %}

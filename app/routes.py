@@ -12,7 +12,8 @@ from .utils import (
     get_orders_for_user, get_all_orders_admin,
     delete_order,
     complete_order_admin, get_all_completed_orders_admin,
-    add_new_production_place 
+    add_new_production_place,
+    update_product_stock_admin, get_all_products_for_stock_management
 )
 from .models import Product, User, CartItem, Order, OrderItem, PickupSlot, ProductionPlace
 from .calendar_utils import generate_calendar_data
@@ -169,16 +170,22 @@ def delete_product(product_id):
 def update_product_field(product_id):
     admin_id = request.cookies.get('user_id')
     if not admin_id or not is_admin(admin_id):
-        abort(403)  # Accès interdit si l'utilisateur n'est pas admin
+        abort(403)
 
     field_name = request.form.get('field_name')
     new_value = request.form.get('new_value')
+    redirect_to = request.form.get('redirect_to')
 
     if update_product_field_util(product_id, field_name, new_value):
         flash(f"Champ '{field_name}' mis à jour avec succès.", "success")
     else:
         flash(f"Échec de la mise à jour du champ '{field_name}'.", "error")
-    return redirect(url_for('main.product', product_id=product_id))
+    
+    # Rediriger selon le paramètre redirect_to
+    if redirect_to == 'stock_management':
+        return redirect(url_for('main.admin_stock_management'))
+    else:
+        return redirect(url_for('main.product', product_id=product_id))
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -747,3 +754,30 @@ def production_place_page(place_id):
         abort(404)
     products = Product.query.filter_by(production_place_id=place_id, is_active=True).all()
     return render_template('production_place.html', place=place, products=products)
+
+@bp.route('/admin/stock-management', methods=['GET', 'POST'])
+def admin_stock_management():
+    """Page de gestion des stocks pour l'administrateur."""
+    user_id = request.cookies.get('user_id')
+    if not user_id or not is_admin(user_id):
+        flash("Accès non autorisé.", "error")
+        abort(403)
+    
+    if request.method == 'POST':
+        product_id = request.form.get('product_id')
+        new_stock = request.form.get('new_stock')
+        
+        if product_id and new_stock is not None:
+            success, message = update_product_stock_admin(product_id, new_stock)
+            if success:
+                flash(message, "success")
+            else:
+                flash(message, "error")
+        else:
+            flash("Données manquantes pour la mise à jour du stock.", "error")
+        
+        return redirect(url_for('main.admin_stock_management'))
+    
+    # Pour GET request
+    products = get_all_products_for_stock_management()
+    return render_template('admin_stock_management.html', products=products)

@@ -352,6 +352,13 @@ def create_order_from_cart(user_id):
     if not cart_items:
         return None, "Votre panier est vide."
 
+    # Vérifier le stock avant de créer la commande
+    for item in cart_items:
+        if not item.product:
+            return None, f"Produit {item.product_id} non trouvé."
+        if item.product.stock < item.quantity:
+            return None, f"Stock insuffisant pour {item.product.name}. Stock disponible: {item.product.stock}, quantité demandée: {item.quantity}."
+
     total_price, _ = get_cart_total_and_item_count(user_id)
     
     new_order = Order(
@@ -362,7 +369,7 @@ def create_order_from_cart(user_id):
     )
     db.session.add(new_order)
     
-    # Ajoute les articles du panier à la commande
+    # Ajoute les articles du panier à la commande et décrémente le stock
     for item in cart_items:
         if item.product: # S'assure que le produit existe
             order_item = OrderItem(
@@ -372,6 +379,9 @@ def create_order_from_cart(user_id):
                 price_at_purchase=item.product.price # Prix au moment de la commande
             )
             new_order.items.append(order_item) # Ajoute à la relation
+            
+            # Décrémente le stock du produit
+            item.product.stock -= item.quantity
         else:
             # Gérer cas où un produit du panier n'existe plus
             db.session.rollback()
@@ -479,6 +489,11 @@ def delete_order(order_number, user_id):
         return False, f"Cette commande ne peut pas être supprimée (statut actuel: {order.status})."
 
     try:
+        # Restaurer le stock des produits avant suppression
+        for order_item in order.items:
+            if order_item.product:
+                order_item.product.stock += order_item.quantity
+        
         # Suppression de l'objet Order déclenchera suppression en cascade des OrderItems associés grâce à `cascade="all, delete-orphan"`
         db.session.delete(order)
         db.session.commit()
@@ -520,3 +535,27 @@ def add_new_production_place(id, name, producer_name, address, description, cont
     db.session.add(new_place)
     db.session.commit()
     return new_place
+
+def update_product_stock_admin(product_id, new_stock):
+    """Met à jour le stock d'un produit. Action réservée à l'admin."""
+    product = Product.query.get(product_id)
+    if not product:
+        return False, "Produit non trouvé."
+    
+    try:
+        new_stock = int(new_stock)
+        if new_stock < 0:
+            return False, "Le stock ne peut pas être négatif."
+        
+        product.stock = new_stock
+        db.session.commit()
+        return True, f"Stock du produit '{product.name}' mis à jour à {new_stock} unités."
+    except ValueError:
+        return False, "Valeur de stock invalide."
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Erreur lors de la mise à jour du stock: {str(e)}"
+
+def get_all_products_for_stock_management():
+    """Récupère tous les produits avec leurs informations de stock pour la gestion admin."""
+    return Product.query.order_by(Product.name).all()
