@@ -34,6 +34,8 @@ class Product(db.Model):
     stock = db.Column(db.Integer, default=0)
     is_active = db.Column(db.Boolean, default=True)
     image_path = db.Column(db.String(200))
+    production_place_id = db.Column(db.String(36), db.ForeignKey('production_place.id'), nullable=True)
+    production_place = db.relationship('ProductionPlace', back_populates='products')
 
     cart_items = db.relationship('CartItem', backref='product', lazy=True)
     order_items = db.relationship('OrderItem', backref='product', lazy=True)
@@ -85,3 +87,18 @@ class OrderItem(db.Model):
 
     def __repr__(self):
         return f'<OrderItem Product {self.product_id} x{self.quantity} for Order {self.order_id}>'
+
+class ProductionPlace(db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = db.Column(db.String(100), nullable=False)
+    producer_name = db.Column(db.String(100), nullable=False)
+    producer_photo_path = db.Column(db.String(200))
+    place_photo_path = db.Column(db.String(200))
+    address = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    contact_email = db.Column(db.String(100), nullable=False)
+
+    products = db.relationship('Product', back_populates='production_place', lazy=True)
+
+    def __repr__(self):
+        return f'<ProductionPlace {self.name}>'

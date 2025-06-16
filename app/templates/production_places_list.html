@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Lieux de Production{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/production_places_list.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="production-places-container">
+    <div class="production-places-header">
+        <h1>Lieux de production</h1>
+        {% if is_admin_user %}
+        <a href="{{ url_for('main.admin_add_production_place') }}" class="btn btn-primary">➕ Ajouter un lieu</a>
+        {% endif %}
+    </div>
+    {% if places %}
+    <div class="places-grid">
+        {% for place in places %}
+        <div class="place-card">
+            <div class="place-banner" style="background-image: url('{{ url_for('static', filename=place.place_photo_path or 'img/default.png') }}');"></div>
+            <div class="place-card-content">
+                <div class="place-producer">
+                    <img src="{{ url_for('static', filename=place.producer_photo_path or 'img/default-producer.png') }}" alt="Producteur">
+                    <div>
+                        <h2 class="place-name">{{ place.name }}</h2>
+                        <p class="producer-name">👤 {{ place.producer_name }}</p>
+                    </div>
+                </div>
+                <p class="place-address">📍 {{ place.address }}</p>
+                <p class="place-description">{{ place.description[:100] }}{% if place.description|length > 100 %}...{% endif %}</p>
+                <p class="place-contact">✉️ <a href="mailto:{{ place.contact_email }}">{{ place.contact_email }}</a></p>
+                <div class="place-actions">
+                    <a href="{{ url_for('main.production_place_page', place_id=place.id) }}" class="btn btn-secondary">Voir</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="no-places">
+            <p>Aucun lieu de production enregistré.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

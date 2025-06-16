@@ -11,9 +11,10 @@ from .utils import (
     create_order_from_cart, get_order_by_number_for_user, confirm_order_pickup,
     get_orders_for_user, get_all_orders_admin,
     delete_order,
-    complete_order_admin, get_all_completed_orders_admin
+    complete_order_admin, get_all_completed_orders_admin,
+    add_new_production_place 
 )
-from .models import Product, User, CartItem, Order, OrderItem, PickupSlot
+from .models import Product, User, CartItem, Order, OrderItem, PickupSlot, ProductionPlace
 from .calendar_utils import generate_calendar_data
 import uuid
 from flask import Blueprint
@@ -21,6 +22,7 @@ from werkzeug.utils import secure_filename
 import os
 import re
 from datetime import datetime
+from . import db
 
 # Crée un Blueprint pour les routes principales
 bp = Blueprint('main', __name__)
@@ -63,12 +65,14 @@ def add_product():
     if not user_id or not is_admin(user_id):
         abort(403)  # Accès interdit si l'utilisateur n'est pas admin
 
+    places = ProductionPlace.query.all()
     if request.method == 'POST':
         name = request.form['nom']
         description = request.form['description']
         price = float(request.form['prix'])
         stock = int(request.form['stock'])
         image = request.files.get('image')
+        production_place_id = request.form.get('production_place_id') or None
         
         # Génère une ID unique pour le produit
         product_id = str(uuid.uuid4())
@@ -96,25 +100,41 @@ def add_product():
             price=price,
             stock=stock,
             is_active=True,
-            image_path=image_path
+            image_path=image_path,
+            production_place_id=production_place_id
         )
 
         # Redirige vers la page d'ajout de produit
         return redirect(url_for('main.add_product'))
 
     # Retourne le template pour ajouter un produit
-    return render_template('add_product.html')
+    return render_template('add_product.html', places=places)
 
 # Route pour afficher la liste des produits
 @bp.route('/products')
 def list_products():
-    products = Product.query.all()
+    # Récupère le paramètre de filtre producteur
+    producer_id = request.args.get('producer')
+    products_query = Product.query
+
+    # Applique le filtre producteur si présent
+    if producer_id:
+        products_query = products_query.filter(Product.production_place_id == producer_id)
+    products = products_query.all()
+
+    # Liste de tous les lieux de production pour le filtre
+    production_places = ProductionPlace.query.all()
 
     # Vérifie si l'utilisateur est admin
     admin_privilege = is_admin(request.cookies.get('user_id'))
 
-    # Retourne la liste des produits
-    return render_template('products_list.html', products=products, admin_privilege=admin_privilege)
+    return render_template(
+        'products_list.html',
+        products=products,
+        admin_privilege=admin_privilege,
+        production_places=production_places,
+        selected_producer_id=producer_id
+    )
 
 
 # Route pour afficher un produit spécifique
@@ -667,3 +687,63 @@ def admin_manage_calendar_route():
                            calendar_data=calendar_data,
                            current_year=year,
                            current_month=month)
+
+@bp.route('/production_places')
+def production_places_list():
+    places = ProductionPlace.query.all()
+    is_admin_user = is_admin(request.cookies.get('user_id'))
+    return render_template('production_places_list.html', places=places, is_admin_user=is_admin_user)
+
+@bp.route('/admin/production_places/add', methods=['GET', 'POST'])
+def admin_add_production_place():
+    user_id = request.cookies.get('user_id')
+    if not user_id or not is_admin(user_id):
+        abort(403)
+    if request.method == 'POST':
+        name = request.form['name']
+        producer_name = request.form['producer_name']
+        address = request.form['address']
+        description = request.form['description']
+        contact_email = request.form['contact_email']
+        place_id = str(uuid.uuid4())
+
+        # Gestion des images
+        producer_photo = request.files.get('producer_photo')
+        place_photo = request.files.get('place_photo')
+        producer_photo_path = None
+        place_photo_path = None
+
+        if producer_photo and producer_photo.filename != '':
+            filename = secure_filename(f"{place_id}_producer.png")
+            img_dir = os.path.join(bp.root_path, 'static', 'producer_img')
+            os.makedirs(img_dir, exist_ok=True)
+            producer_photo.save(os.path.join(img_dir, filename))
+            producer_photo_path = f'producer_img/{filename}'
+        if place_photo and place_photo.filename != '':
+            filename = secure_filename(f"{place_id}_place.png")
+            img_dir = os.path.join(bp.root_path, 'static', 'place_img')
+            os.makedirs(img_dir, exist_ok=True)
+            place_photo.save(os.path.join(img_dir, filename))
+            place_photo_path = f'place_img/{filename}'
+
+        add_new_production_place(
+            id=place_id,
+            name=name,
+            producer_name=producer_name,
+            address=address,
+            description=description,
+            contact_email=contact_email,
+            producer_photo_path=producer_photo_path,
+            place_photo_path=place_photo_path
+        )
+        flash("Lieu de production ajouté.", "success")
+        return redirect(url_for('main.production_places_list'))
+    return render_template('admin_add_production_place.html')
+
+@bp.route('/production_place/<place_id>')
+def production_place_page(place_id):
+    place = ProductionPlace.query.get(place_id)
+    if not place:
+        abort(404)
+    products = Product.query.filter_by(production_place_id=place_id, is_active=True).all()
+    return render_template('production_place.html', place=place, products=products)

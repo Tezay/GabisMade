@@ -29,6 +29,14 @@
     <label>Image :</label><br>
     <input type="file" name="image" accept="image/*"><br><br>
 
+    <label>Lieu de production :</label><br>
+    <select name="production_place_id">
+        <option value="">Aucun lieu précisé</option>
+        {% for place in places %}
+            <option value="{{ place.id }}">{{ place.name }} ({{ place.producer_name }})</option>
+        {% endfor %}
+    </select><br><br>
+
     <button type="submit">Ajouter</button>
 </form>
 

@@ -25,31 +25,36 @@
     <div class="filters-section">
         <h3>Filtrer les produits</h3>
         <div class="filters-grid">
-            <select class="filter-select" id="filter-producer">
-                <option value="">Tous les producteurs</option>
-                <option value="ferme-martin">Ferme Martin</option>
-                <option value="jardin-bio">Le Jardin Bio</option>
-                <option value="verger-dupont">Verger Dupont</option>
-            </select>
-            <select class="filter-select" id="filter-category">
-                <option value="">Toutes les catégories</option>
-                <option value="legumes">Légumes</option>
-                <option value="fruits">Fruits</option>
-                <option value="produits-laitiers">Produits laitiers</option>
-                <option value="viandes">Viandes & Charcuterie</option>
-                <option value="conserves">Conserves & Confitures</option>
-            </select>
-            <select class="filter-select" id="filter-availability">
-                <option value="">Disponibilité</option>
-                <option value="available">En stock uniquement</option>
-                <option value="all">Tous les produits</option>
-            </select>
-            <select class="filter-select" id="filter-sort">
-                <option value="">Trier par</option>
-                <option value="price-asc">Prix croissant</option>
-                <option value="price-desc">Prix décroissant</option>
-                <option value="name">Nom (A-Z)</option>
-            </select>
+            <form id="filter-form" method="get" style="display: contents;">
+                <select class="filter-select" id="filter-producer" name="producer" onchange="document.getElementById('filter-form').submit();">
+                    <option value="">Tous les producteurs</option>
+                    {% for place in production_places %}
+                        <option value="{{ place.id }}" {% if selected_producer_id == place.id %}selected{% endif %}>
+                            {{ place.name }} ({{ place.producer_name }})
+                        </option>
+                    {% endfor %}
+                </select>
+                <!-- Filtres à implémenter (non fonctionnels) -->
+                <select class="filter-select" id="filter-category" disabled>
+                    <option value="">Toutes les catégories</option>
+                    <option value="legumes">Légumes</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="produits-laitiers">Produits laitiers</option>
+                    <option value="viandes">Viandes & Charcuterie</option>
+                    <option value="conserves">Conserves & Confitures</option>
+                </select>
+                <select class="filter-select" id="filter-availability" disabled>
+                    <option value="">Disponibilité</option>
+                    <option value="available">En stock uniquement</option>
+                    <option value="all">Tous les produits</option>
+                </select>
+                <select class="filter-select" id="filter-sort" disabled>
+                    <option value="">Trier par</option>
+                    <option value="price-asc">Prix croissant</option>
+                    <option value="price-desc">Prix décroissant</option>
+                    <option value="name">Nom (A-Z)</option>
+                </select>
+            </form>
         </div>
     </div>
 
@@ -93,7 +98,13 @@
                 <div class="product-info">
                     <div class="product-header-info">
                         <h2 class="product-name">{{ product.name }}</h2>
-                        <p class="product-producer">Ferme Martin - Seine-et-Marne</p>
+                        {% if product.production_place %}
+                            <p class="product-producer">
+                                {{ product.production_place.name }}
+                            </p>
+                        {% else %}
+                            <p class="product-producer" style="color: var(--text-light);">Lieu de production non précisé</p>
+                        {% endif %}
                     </div>
                     
                     <div class="product-bottom">
@@ -139,14 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
         }, index * 100);
-    });
-});
-
-// Gestion des filtres (à implémenter avec backend)
-document.querySelectorAll('.filter-select').forEach(select => {
-    select.addEventListener('change', function() {
-        console.log('Filtre appliqué:', this.id, this.value);
-        // Future implémentation du filtrage
     });
 });
 </script>

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ place.name }} - Producteur{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/production_place.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="production-place-banner" style="background-image: url('{{ url_for('static', filename=place.place_photo_path or 'img/default.png') }}');"></div>
+<div class="production-place-info">
+    <div class="production-place-info-flex">
+        <img src="{{ url_for('static', filename=place.producer_photo_path or 'img/default-producer.png') }}" alt="Producteur">
+        <div>
+            <h1>{{ place.name }}</h1>
+            <h3>👤 {{ place.producer_name }}</h3>
+            <p>📍 {{ place.address }}</p>
+            <p>{{ place.description }}</p>
+            <p>Contact : <a href="mailto:{{ place.contact_email }}">{{ place.contact_email }}</a></p>
+        </div>
+    </div>
+</div>
+<div class="production-place-products">
+    <h2>Ce producteur propose également :</h2>
+    <div class="products-grid">
+        {% for product in products %}
+            <a href="{{ url_for('main.product', product_id=product.id) }}" class="product-card fade-in">
+                <div class="product-image-container">
+                    {% if product.image_path %}
+                        <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                        <div class="product-image-fallback">
+                            <span>🥬</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <h2 class="product-name">{{ product.name }}</h2>
+                    <span class="product-price">{{ "%.2f"|format(product.price) }}€</span>
+                </div>
+            </a>
+        {% else %}
+            <p class="no-products">Aucun autre produit pour ce producteur.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -34,11 +34,22 @@
 
             <!-- Info producteur -->
             <div class="producer-info">
-                <img src="{{ url_for('static', filename='img/default-producer.png') }}" alt="Producteur" onerror="this.style.display='none'">
-                <div class="producer-details">
-                    <h3>Ferme Martin</h3>
-                    <p>📍 Seine-et-Marne (77)</p>
-                </div>
+                {% if product.production_place %}
+                    <img src="{{ url_for('static', filename=product.production_place.producer_photo_path or 'img/default-producer.png') }}" alt="Producteur" onerror="this.style.display='none'">
+                    <div class="producer-details">
+                        <h3>
+                            <a href="{{ url_for('main.production_place_page', place_id=product.production_place.id) }}" target="_blank" style="color: var(--primary-color); text-decoration: underline;">
+                                {{ product.production_place.name }}
+                            </a>
+                        </h3>
+                        <p>👤 {{ product.production_place.producer_name }}</p>
+                    </div>
+                {% else %}
+                    <img src="{{ url_for('static', filename='img/default-producer.png') }}" alt="Producteur" onerror="this.style.display='none'">
+                    <div class="producer-details">
+                        <h3>Lieu de production non précisé</h3>
+                    </div>
+                {% endif %}
             </div>
 
             <!-- Prix -->

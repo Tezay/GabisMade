@@ -1,4 +1,4 @@
-from .models import Product, User, CartItem, Order, OrderItem, PickupSlot
+from .models import Product, User, CartItem, Order, OrderItem, PickupSlot, ProductionPlace
 from . import db
 from datetime import datetime, timedelta, time
 import pytz # For timezone
@@ -8,7 +8,7 @@ from config import Config
 
 ################## Fonctions utiles pour la gestion des produits ##################
 
-def add_new_product(id, name, description, price, stock=0, is_active=True, image_path=None):
+def add_new_product(id, name, description, price, stock=0, is_active=True, image_path=None, production_place_id=None):
     # Crée un nouveau produit
     new_product = Product(
         id=id,
@@ -17,7 +17,8 @@ def add_new_product(id, name, description, price, stock=0, is_active=True, image
         price=price,
         stock=stock,
         is_active=is_active,
-        image_path=image_path
+        image_path=image_path,
+        production_place_id=production_place_id
     )
     # Ajoute le produit à la base de données
     db.session.add(new_product)
@@ -503,3 +504,19 @@ def complete_order_admin(order_number):
     except Exception as e:
         db.session.rollback()
         return False, f"Erreur lors de la finalisation de la commande {order_number}: {str(e)}"
+
+def add_new_production_place(id, name, producer_name, address, description, contact_email, producer_photo_path=None, place_photo_path=None):
+    """Crée un nouveau lieu de production et l'ajoute à la base de données."""
+    new_place = ProductionPlace(
+        id=id,
+        name=name,
+        producer_name=producer_name,
+        producer_photo_path=producer_photo_path,
+        place_photo_path=place_photo_path,
+        address=address,
+        description=description,
+        contact_email=contact_email
+    )
+    db.session.add(new_place)
+    db.session.commit()
+    return new_place

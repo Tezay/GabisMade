@@ -1,0 +1,164 @@
+/* Copie le contenu de l'ancien admin_production_places.css ici, puis supprime l'ancien fichier si besoin. */
+.production-places-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.production-places-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.production-places-header h1 {
+    color: var(--primary-color);
+    font-size: 2.2rem;
+    margin: 0;
+}
+
+.places-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: flex-start;
+}
+
+.place-card {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.place-card:hover {
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    transform: translateY(-8px) scale(1.02);
+}
+
+.place-banner {
+    width: 100%;
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+}
+
+.place-card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.place-producer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.place-producer img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+}
+
+.place-name {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    margin: 0 0 0.2rem 0;
+}
+
+.producer-name {
+    color: var(--text-light);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.place-address {
+    color: var(--text-light);
+    font-size: 0.98rem;
+    margin-bottom: 0.5rem;
+}
+
+.place-description {
+    color: var(--text-dark);
+    font-size: 1rem;
+    margin-bottom: 0.7rem;
+    min-height: 2.2em;
+}
+
+.place-contact {
+    color: var(--primary-color);
+    font-size: 0.98rem;
+    margin-bottom: 1rem;
+}
+
+.place-contact a {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.place-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 0.7rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--secondary-color);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: var(--primary-color);
+}
+
+.no-places {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 1.2rem;
+    margin-top: 4rem;
+}
+
+@media (max-width: 900px) {
+    .places-grid {
+        flex-direction: column;
+        gap: 2rem;
+        align-items: center;
+    }
+    .place-card {
+        width: 100%;
+        max-width: 400px;
+    }
+}

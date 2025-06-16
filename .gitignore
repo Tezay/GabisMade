@@ -414,6 +414,8 @@ instance/
 
 # Ignore images files
 app/static/img/*
+app/static/place_img/*
+app/static/producer_img/*
 
 # Exept default.png
 !app/static/img/default.png

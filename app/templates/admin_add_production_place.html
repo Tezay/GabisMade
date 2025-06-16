@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajouter un lieu de production{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_add_production_place.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Ajouter un lieu de production</h1>
+<form method="POST" enctype="multipart/form-data">
+    <label>Nom du lieu :</label><br>
+    <input type="text" name="name" required><br><br>
+    <label>Nom du producteur :</label><br>
+    <input type="text" name="producer_name" required><br><br>
+    <label>Photo du producteur :</label><br>
+    <input type="file" name="producer_photo" accept="image/*"><br><br>
+    <label>Photo du lieu :</label><br>
+    <input type="file" name="place_photo" accept="image/*"><br><br>
+    <label>Adresse :</label><br>
+    <input type="text" name="address" required><br><br>
+    <label>Description :</label><br>
+    <textarea name="description" required></textarea><br><br>
+    <label>Contact (email) :</label><br>
+    <input type="email" name="contact_email" required><br><br>
+    <button type="submit">Ajouter</button>
+</form>
+{% endblock %}
