@@ -7,13 +7,16 @@
 {% endblock %}
 
 {% block content %}
-<h1>Profil de {{ user.first_name }} {{ user.last_name }}</h1>
-<div class="user-info">
+<h1 class="profile-title">Mon profil</h1>
+<div class="card user-profile-card">
     <p><strong>Prénom :</strong> {{ user.first_name }}</p>
     <p><strong>Nom :</strong> {{ user.last_name }}</p>
     <p><strong>Numéro de téléphone :</strong> {{ user.phone_number }}</p>
-    <form action="{{ url_for('main.logout') }}" method="GET">
-        <button type="submit" class="logout-button">Se déconnecter</button>
+    <form action="{{ url_for('main.logout') }}" method="GET" class="logout-form">
+        <button type="submit" class="btn btn-danger">Se déconnecter</button>
     </form>
 </div>
+<p class="profile-notice">
+    Pour toute demande de modification d'informations ou de suppression de compte, veuillez nous <a href="{{ url_for('main.contact') }}">contacter par mail</a>.
+</p>
 {% endblock %}

@@ -7,37 +7,39 @@
 {% endblock %}
 
 {% block content %}
-<h1>Liste des utilisateurs</h1>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Prénom</th>
-            <th>Nom</th>
-            <th>Numéro de téléphone</th>
-            <th>Niveau de privilège</th>
-            <th>Device ID</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td onclick="editField('{{ user.id }}', 'first_name', '{{ user.first_name }}')">{{ user.first_name }}</td>
-            <td onclick="editField('{{ user.id }}', 'last_name', '{{ user.last_name }}')">{{ user.last_name }}</td>
-            <td onclick="editField('{{ user.id }}', 'phone_number', '{{ user.phone_number }}')">{{ user.phone_number }}</td>
-            <td onclick="editField('{{ user.id }}', 'privilege_level', '{{ user.privilege_level }}')">{{ user.privilege_level }}</td>
-            <td onclick="editField('{{ user.id }}', 'device_id', '{{ user.device_id }}')">{{ user.device_id }}</td>
-            <td>
-                <form action="{{ url_for('main.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-                    <button type="submit" class="delete-button">Supprimer</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<h1 class="list-title">Liste des utilisateurs</h1>
+<div class="card">
+    <table class="users-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Numéro de téléphone</th>
+                <th>Niveau de privilège</th>
+                <th>Device ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td class="editable-cell" onclick="editField('{{ user.id }}', 'first_name', '{{ user.first_name }}')">{{ user.first_name }}</td>
+                <td class="editable-cell" onclick="editField('{{ user.id }}', 'last_name', '{{ user.last_name }}')">{{ user.last_name }}</td>
+                <td class="editable-cell" onclick="editField('{{ user.id }}', 'phone_number', '{{ user.phone_number }}')">{{ user.phone_number }}</td>
+                <td class="editable-cell" onclick="editField('{{ user.id }}', 'privilege_level', '{{ user.privilege_level }}')">{{ user.privilege_level }}</td>
+                <td class="editable-cell" onclick="editField('{{ user.id }}', 'device_id', '{{ user.device_id }}')">{{ user.device_id }}</td>
+                <td>
+                    <form action="{{ url_for('main.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <script>
     function editField(userId, fieldName, currentValue) {

@@ -1,31 +1,44 @@
-.user-info {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    margin: 20px auto;
-    font-size: 16px;
+.profile-title {
+    text-align: center;
+    margin-bottom: 2rem; 
 }
 
-.user-info p {
-    margin: 10px 0;
+.user-profile-card {
+    max-width: 600px; 
+    margin: 0 auto 2rem auto; 
 }
 
-.user-info strong {
-    color: #333;
+.user-profile-card p {
+    margin-bottom: 1rem; 
+    font-size: 1.1em; 
+    line-height: 1.7; 
+    color: var(--text-dark);
 }
 
-.logout-button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 20px;
+.user-profile-card p strong {
+    color: var(--primary-color); 
+    font-weight: 600; 
+    margin-right: 0.5em; 
 }
 
-.logout-button:hover {
-    background-color: #e60000;
+.logout-form {
+    margin-top: 2rem; 
+    text-align: center; 
+}
+
+.profile-notice {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+.profile-notice a {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.profile-notice a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
 }
