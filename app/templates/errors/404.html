@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Page non trouvée - GabisMade{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/error.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-code">404</div>
+    <h1 class="error-title">Oups ! Page non trouvée</h1>
+    <p class="error-message">
+        La page que vous recherchez semble s'être égarée dans les champs 🌾
+    </p>
+    <div class="error-action">
+        <a href="{{ url_for('main.home') }}" class="btn">Retourner à l'accueil</a>
+    </div>
+</div>
+{% endblock %}

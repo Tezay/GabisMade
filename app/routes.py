@@ -286,11 +286,11 @@ def home():
             first_name = user.first_name
             privilege_level = user.privilege_level
         else:
-            first_name = "Invité"
-            privilege_level = "Aucun"
+            first_name = ""
+            privilege_level = "none"
     else:
-        first_name = "Invité"
-        privilege_level = "Aucun"
+        first_name = ""
+        privilege_level = "none"
 
     return render_template('home.html', first_name=first_name, privilege_level=privilege_level)
 
@@ -781,3 +781,11 @@ def admin_stock_management():
     # Pour GET request
     products = get_all_products_for_stock_management()
     return render_template('admin_stock_management.html', products=products)
+
+@bp.app_errorhandler(404)
+def not_found_error(error):
+    return render_template('errors/404.html'), 404
+
+@bp.app_errorhandler(403)
+def forbidden_error(error):
+    return render_template('errors/403.html'), 403
