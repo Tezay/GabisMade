@@ -158,6 +158,8 @@
 .cta-title {
     font-size: 2.5rem;
     margin-bottom: 1rem;
+    color: #FFFBDE;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Animations */

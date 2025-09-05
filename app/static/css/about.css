@@ -19,6 +19,12 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* CTA Section title color fix */
+.about-content div[style*="background-color: var(--primary-color)"] h2 {
+    color: #FFFBDE !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .about-content {
     max-width: 800px;
     margin: 3rem auto;
