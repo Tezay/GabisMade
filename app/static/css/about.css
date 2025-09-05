@@ -9,7 +9,13 @@
     border-radius: 0 0 30px 30px;
 }
 
-.about-hero h1, .about-hero p {
+.about-hero h1 {
+    color: #FFFBDE;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.about-hero p {
+    color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 

@@ -14,7 +14,8 @@
     font-size: 3.5rem;
     margin-bottom: 1rem;
     animation: fadeInUp 1s ease-out;
-    text-shadow: 2px 2px 4px rgba(221, 220, 220, 0.5);
+    color: #FFFBDE;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     font-weight: bold;
 }
 
@@ -24,6 +25,8 @@
     opacity: 0.9;
     animation: fadeInUp 1s ease-out 0.2s;
     animation-fill-mode: both;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero-buttons {
