@@ -1,7 +1,7 @@
 /* Hero Section */
 .hero-section {
     background: linear-gradient(rgba(45, 110, 62, 0.1), rgba(45, 110, 62, 0.1)), 
-                url('/static/assets/background_image.webp');
+                url('/static/assets/vendange.jpg');
     background-size: cover;
     background-position: center;
     color: white;

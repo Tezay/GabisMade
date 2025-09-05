@@ -1,10 +1,16 @@
 .about-hero {
-    background: linear-gradient(rgba(45, 110, 62, 0.9), rgba(45, 110, 62, 0.9)), 
-                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect fill="%23f0f0f0" width="1200" height="400"/></svg>');
+    background: linear-gradient(rgba(45, 110, 62, 0.1), rgba(45, 110, 62, 0.1)), 
+                url('/static/assets/paysage2.jpg');
+    background-size: cover;
+    background-position: center;
     color: white;
     padding: 4rem 2rem;
     text-align: center;
     border-radius: 0 0 30px 30px;
+}
+
+.about-hero h1, .about-hero p {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .about-content {
@@ -86,4 +92,30 @@
     justify-content: center;
     margin: 0 auto 1rem;
     font-size: 4rem;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .about-hero {
+        padding: 4rem 1rem;
+    }
+    
+    .about-hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .about-hero p {
+        font-size: 1.2rem;
+    }
 }

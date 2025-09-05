@@ -87,6 +87,26 @@
     text-transform: capitalize;
 }
 
+/* Animation de soulignement pour les liens de navigation principaux */
+.nav-links ul li a:not(.nav-button):after {
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 4px;  
+    left: 50%;
+    position: absolute;
+    background: var(--background-light);
+    transition: width 0.3s ease 0s, left 0.3s ease 0s;
+    width: 0;
+}
+
+.nav-links ul li a:not(.nav-button):hover:after,
+.nav-links ul li a:not(.nav-button).active:after {
+    width: 100%; 
+    left: 0; 
+}
+
 .nav-links ul li a:hover,
 .nav-links ul li a.active {
     color: var(--background-light);

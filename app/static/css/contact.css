@@ -1,9 +1,16 @@
 .contact-hero {
-    background: linear-gradient(rgba(45, 110, 62, 0.9), rgba(45, 110, 62, 0.9));
+    background: linear-gradient(rgba(45, 110, 62, 0.1), rgba(45, 110, 62, 0.1)), 
+                url('/static/assets/voiture.jpg');
+    background-size: cover;
+    background-position: center;
     color: white;
     padding: 3rem 2rem;
     text-align: center;
     border-radius: 0 0 30px 30px;
+}
+
+.contact-hero h1, .contact-hero p {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .contact-container {
@@ -146,6 +153,18 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+    .contact-hero {
+        padding: 3rem 1rem;
+    }
+    
+    .contact-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .contact-hero p {
+        font-size: 1.1rem;
+    }
+    
     .contact-grid {
         grid-template-columns: 1fr;
     }
