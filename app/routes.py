@@ -15,6 +15,7 @@ from .utils import (
     add_new_production_place,
     update_product_stock_admin, get_all_products_for_stock_management
 )
+from .utils import normalize_name
 from .models import Product, User, CartItem, Order, OrderItem, PickupSlot, ProductionPlace
 from .calendar_utils import generate_calendar_data
 import uuid
@@ -195,8 +196,17 @@ def login():
         last_name = request.form['last_name']
         password = request.form['password']
 
-        # Vérifie si l'utilisateur existe et si le mot de passe est correct
-        user = User.query.filter_by(first_name=first_name, last_name=last_name).first()
+        # Normalise les entrées
+        nf = normalize_name(first_name)
+        nl = normalize_name(last_name)
+
+        # Recherche de l'utilisateur par comparaison
+        user = None
+        for u in User.query.all():
+            if normalize_name(u.first_name) == nf and normalize_name(u.last_name) == nl:
+                user = u
+                break
+
         if user and user.check_password(password):
             # Récupère le device_id actuel
             current_device_id = request.cookies.get('device_id')
@@ -249,6 +259,10 @@ def register():
         if is_name_taken(first_name, last_name):
             return render_template('register.html', error="Un compte avec ce nom et prénom existe déjà.")
 
+        # Vérifie si le numéro de téléphone est déjà utilisé
+        if User.query.filter_by(phone_number=phone_number).first() is not None:
+            return render_template('register.html', error="Ce numéro de téléphone est déjà associé à un compte.")
+
         # Récup-re ou génère le device_id à partir des cookies
         device_id = request.cookies.get('device_id')
         if not device_id:
@@ -260,13 +274,21 @@ def register():
             return render_template('register.html', error="Un compte a déjà été créé depuis cet appareil.")
 
         # Crée un nouvel utilisateur dans la database
-        user = add_new_user(
-            first_name=first_name,
-            last_name=last_name,
-            phone_number=phone_number,
-            password=password,
-            device_id=device_id,
-        )
+        try:
+            user = add_new_user(
+                first_name=first_name,
+                last_name=last_name,
+                phone_number=phone_number,
+                password=password,
+                device_id=device_id,
+            )
+        except Exception as e:
+            # Gestion défensive des erreurs d'intégrité
+            from sqlalchemy.exc import IntegrityError
+            if isinstance(e, IntegrityError):
+                db.session.rollback()
+                return render_template('register.html', error="Ce numéro de téléphone est déjà associé à un compte.")
+            raise
 
         # Set le device_id dans les cookies pour l'utilisateur
         response = make_response(redirect(url_for('main.list_products')))

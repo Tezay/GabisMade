@@ -5,6 +5,7 @@ import pytz # For timezone
 import uuid # For order number generation
 from .discord_utils import send_discord_notification
 from config import Config
+import unicodedata
 
 ################## Fonctions utiles pour la gestion des produits ##################
 
@@ -65,6 +66,21 @@ def update_product_field_util(product_id, field_name, new_value):
 
 ################## Fonctions utiles pour la gestion utilisateurs ##################
 
+def normalize_name(value: str) -> str:
+    """Normalise une chaîne pour comparaison insensible aux majuscules, accents et espaces finaux.
+    - Trim des espaces aux extrémités
+    - Passage en minuscules
+    - Suppression des accents (décomposition unicode puis suppression des marques combinantes)
+    """
+    if value is None:
+        return ""
+    # Trim spaces (both ends) and lowercase
+    trimmed = value.strip().lower()
+    # Remove accents
+    nfkd_form = unicodedata.normalize('NFD', trimmed)
+    without_accents = ''.join(ch for ch in nfkd_form if not unicodedata.combining(ch))
+    return without_accents
+
 def is_device_id_known(device_id):
     # Debug: Check device_id in database
     return User.query.filter_by(device_id=device_id).first() is not None
@@ -86,14 +102,24 @@ def add_new_user(first_name, last_name, phone_number, password, device_id, privi
 
 def is_admin(user_id):
     # Vérifie si l'utilisateur a un niveau de privilège "admin"
+    if not user_id:
+        return False
     user = User.query.get(user_id)
     if user:
         return user.privilege_level == "admin"
     return False
 
 def is_name_taken(first_name, last_name):
-    # Vérifie si un utilisateur avec le même nom et prénom existe déjà
-    return User.query.filter_by(first_name=first_name, last_name=last_name).first() is not None
+    """Vérifie si un utilisateur avec le même nom et prénom existe déjà,
+    sans tenir compte des majuscules, accents et espaces en fin/début.
+    """
+    nf = normalize_name(first_name)
+    nl = normalize_name(last_name)
+    # Parcourt les utilisateurs existants et compare sur version normalisée
+    for u in User.query.all():
+        if normalize_name(u.first_name) == nf and normalize_name(u.last_name) == nl:
+            return True
+    return False
 
 def update_device_id(user, new_device_id):
     # Met à jour le device_id de l'utilisateur si nécessaire
