@@ -399,12 +399,39 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# Virtual Environments
+# ---- Added for Python project ----
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
 .venv/
 venv/
 ENV/
 env/
 .venv*/
+
+# Local environment and data
+.env
+instance/
+app/app/static/img/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# macOS
+.DS_Store
+
+# Docker
+.dockerignore
+*.tar
+docker-compose.override.yml
+
 
 # .env files
 .env

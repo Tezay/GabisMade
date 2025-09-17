@@ -1,0 +1,25 @@
+services:
+  web:
+    build: .
+    container_name: gabismade_web
+    ports:
+      - "5000:5000"
+    # Loads environment variables from .env (at project root)
+    env_file:
+      - .env
+    volumes:
+      # Persist SQLite DB and instance files
+      - instance:/app/instance
+      # Persist uploaded images
+      - static_img:/app/app/static/img
+    restart: unless-stopped
+    # Healthcheck (simple TCP check on 5000)
+    healthcheck:
+      test: ["CMD-SHELL", "python - <<'PY'\nimport socket, sys\ns=socket.socket()\ns.settimeout(3)\ntry:\n    s.connect(('127.0.0.1', 5000))\n    s.close()\n    sys.exit(0)\nexcept Exception:\n    sys.exit(1)\nPY"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  instance:
+  static_img:
