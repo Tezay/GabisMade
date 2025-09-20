@@ -88,6 +88,63 @@ Le mot de passe sera affiché dans la console.
 flask run
 ```
 
+## Déploiement avec Docker Compose
+
+### Prérequis
+
+- [Docker Engine](https://docs.docker.com/engine/install/) et le plugin Docker Compose.
+- Un fichier `.env` prêt à l'emploi à la racine du projet (voir la section "Installer & Lancement").
+
+### 1. Lancer l'environnement conteneurisé
+
+Le dépôt inclut un `docker-compose.yml` qui construit l'image de l'application, expose le port 5000 et déclare deux volumes nommés pour
+persister la base SQLite (`instance`) ainsi que les images téléversées (`static_img`).
+
+```bash
+docker compose up -d --build
+```
+
+Cette commande construit l'image (si nécessaire) puis démarre le service web en arrière-plan. La première exécution crée
+automatiquement le dossier `instance/` et initialise la base `site.db` via le script `prestart.py`.
+
+### 2. Suivre les logs et vérifier le démarrage
+
+```bash
+docker compose logs -f web
+```
+
+Attendez de voir Gunicorn à l'écoute sur le port `5000`. Le site est alors accessible sur <http://127.0.0.1:5000> (ou via `PUBLIC_BASE_URL`
+si vous l'avez personnalisé).
+
+### 3. Créer le compte administrateur
+
+Une fois le conteneur lancé, générez le compte administrateur initial directement dans le conteneur :
+
+```bash
+docker compose exec web python init_admin.py
+```
+
+Le mot de passe généré est affiché dans la console (notez-le immédiatement). Les scripts utilitaires comme
+`populate_slots_from_calendar.py` ou `reset_db.py` se lancent de la même façon avec `docker compose exec web python <script>.py`.
+
+### 4. Gérer les volumes persistants
+
+Les données sont conservées dans des volumes Docker nommés :
+
+- `instance` pour la base SQLite et les fichiers liés à Flask.
+- `static_img` pour les images uploadées et l'image par défaut (`default.png`).
+
+Vous pouvez les sauvegarder ou les inspecter via `docker volume inspect` ou en les montant temporairement dans un conteneur utilitaire.
+
+### 5. Arrêter ou recréer l'environnement
+
+```bash
+docker compose down
+```
+
+Relancez ensuite avec `docker compose up -d` pour appliquer des mises à jour (après un `git pull`, par exemple). Ajoutez `--build` si
+le code ou les dépendances ont changé.
+
 ## Gestion Automatisée des Créneaux de Retrait (via Calendrier Externe)
 
 Le script `populate_slots_from_calendar.py` est conçu pour automatiser la création de créneaux de retrait dans la base de données de l'application. Il fonctionne en récupérant des événements (par exemple, des cours ou des disponibilités) à partir d'un flux iCalendar externe et en générant des créneaux de retrait potentiels basés sur des règles prédéfinies.
